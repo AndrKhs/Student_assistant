@@ -54,7 +54,7 @@ public class SearchDeadline implements FunctionsBot {
             sbOne.append("\n").append("Cписок дедлайнов:").append("\n").append(builder.toString());
             return sbOne.toString();
         }
-        return "";
+        return "Такой группы не существует";
     }
 
     @Override

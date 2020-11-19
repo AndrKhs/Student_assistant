@@ -70,6 +70,12 @@ public class Bot extends TelegramLongPollingBot {
                         deleteRequset.deleteRequest(idUser, "9");
                         words = "break";
                     }
+                    else {
+                        StringBuilder s = new StringBuilder();
+                        s.append(errorOne).append("Группа");
+                        sendMsg(message,s.toString());
+                        words = "break";
+                    }
                 }
                 if (searchRequest.searchRequest(idUser, "0").equals(idUser + "0")) {
                     String[] number = words.split("-");
@@ -78,6 +84,12 @@ public class Bot extends TelegramLongPollingBot {
                     if(number.length == 2 && lenOne.length() < 4 && lenOne.length() > 1 && lenTwo.length() == 6){
                         writeRequest.writeRequest(idUser,"2", words);
                         sendMsg(message, "Напишите мне ДД.ММ.ГГГГ дедлайна, который вы хотите удалить");
+                        words = "break";
+                    }
+                    else {
+                        StringBuilder s = new StringBuilder();
+                        s.append(errorOne).append("Группа");
+                        sendMsg(message,s.toString());
                         words = "break";
                     }
                 }
