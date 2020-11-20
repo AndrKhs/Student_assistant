@@ -5,3 +5,4 @@
 /target/*
 /.gradle/*
 /src/.idea/*
+/Token.txt/
