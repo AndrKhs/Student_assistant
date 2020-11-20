@@ -11,7 +11,7 @@ public class SearchDeadlineTest {
     @Test
     public void searchDeadline() {
         StringBuilder sb = new StringBuilder();
-        SearchDeadline search = new SearchDeadline();
+        FunctionsBot search = new GetFunctionsBot();
         sb.append("\n").append("Дедлайнов нет");
         try {
             assertEquals(sb.toString(), search.searchDeadline("МЕН-292203"));

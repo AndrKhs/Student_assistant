@@ -12,12 +12,12 @@ public class WriteHomeWorkTest {
 
     @Test
     public void writeFl() {
-        WriteHomeWork write = new WriteHomeWork();
+        FunctionsBot write = new GetFunctionsBot();
         StringBuilder builder = new StringBuilder();
         builder.append(System.getProperty("user.dir")).append("\\Files\\МЕН-292203\\Test");
         File fi = new File(builder.toString());
         try {
-            String test = write.writeFl("Test", "test", "test", "МЕН-292203");
+            String test = write.writeFile("Test", "test", "test", "МЕН-292203");
             if (fi.delete())
             assertEquals("Test", test);
         } catch (IOException e) {

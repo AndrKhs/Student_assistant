@@ -11,7 +11,7 @@ public class getGroupListTest {
     @Test
     public void search() {
         StringBuilder sb = new StringBuilder();
-        getGroupList groupList = new getGroupList();
+        GetFunctionsBot groupList = new GetFunctionsBot();
         sb.append("\n").append("Cписок академических групп:").append("\n").append("МЕН-292203");
         try {
             assertEquals(sb.toString(), groupList.searchGroup());
