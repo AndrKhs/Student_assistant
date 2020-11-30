@@ -1,9 +1,12 @@
 package botAbility.Consol;
 
+import bot.Bot;
+import org.apache.log4j.Logger;
+
 import java.io.*;
 
 public class RequestConsol implements botConsol {
-
+    private final static Logger log = Logger.getLogger(RequestConsol.class);
     /**
      * Поиск временного файла
      *
@@ -13,11 +16,10 @@ public class RequestConsol implements botConsol {
      * @throws IOException
      */
     @Override
-    public String searchRequest(String userId, String commandNumber) throws IOException {
+    public String searchRequest(String userId, String commandNumber) {
         StringBuilder sb = new StringBuilder();
         sb.append(System.getProperty("user.dir")).append("\\TimeDataBase\\").append(userId).append(commandNumber);
         File fi = new File(sb.toString());
-        ;
         if (fi.exists()) {
             return userId + commandNumber;
         } else fi.delete();
@@ -33,7 +35,7 @@ public class RequestConsol implements botConsol {
      * @throws IOException
      */
     @Override
-    public String deleteRequest(String userId, String commandNumber) throws IOException {
+    public String deleteRequest(String userId, String commandNumber) {
         StringBuilder sb = new StringBuilder();
         sb.append(System.getProperty("user.dir")).append("\\TimeDataBase\\").append(userId).append(commandNumber);
         File fi = new File(sb.toString());
@@ -57,6 +59,7 @@ public class RequestConsol implements botConsol {
         try {
             date = objectInputStream.readObject().toString();
         } catch (ClassNotFoundException e) {
+            log.error(e);
             e.printStackTrace();
         }
         objectInputStream.close();
