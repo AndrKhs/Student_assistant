@@ -6,3 +6,4 @@
 /.gradle/*
 /src/.idea/*
 /Token.txt/
+/logs/
