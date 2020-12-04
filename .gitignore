@@ -5,5 +5,5 @@
 /target/*
 /.gradle/*
 /src/.idea/*
-/Token.txt/
+/Token.txt
 /logs/
