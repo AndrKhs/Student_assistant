@@ -8,7 +8,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.io.IOException;
 
 public class Delete extends Command{
-    private static final Logger log = LogManager.getLogger(Delete.class);
+    static final Logger log = LogManager.getLogger();
+
+    /**
+     * Метод для начала диалога с пользователем по удалению дедлайна
+     * @param message
+     * @return
+     */
     @Override
     public String execute(Message message) {
         String idUser = message.getFrom().getId().toString();

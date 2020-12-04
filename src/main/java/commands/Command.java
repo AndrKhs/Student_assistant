@@ -7,6 +7,9 @@ import botAbility.FunctionsBot.ProviderBot.DateBaseBot;
 import botAbility.FunctionsBot.ProviderBot.TelegramProvider;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+/**
+ * Абстракция для
+ */
 public abstract class Command implements ICommand{
     protected TelegramProvider send = new TelegramProvider();
     protected botConsol request = new RequestConsol();

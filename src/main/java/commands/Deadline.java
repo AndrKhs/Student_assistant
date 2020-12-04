@@ -8,8 +8,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.io.IOException;
 
 public class Deadline extends Command{
+    static final Logger log = LogManager.getLogger();
 
-    private static final Logger log = LogManager.getLogger(Deadline.class);
+    /**
+     * Метод для начала диалога с пользователем по просмотру дедлайна
+     * @param message
+     * @return
+     */
     @Override
     public String execute(Message message) {
         String idUser = message.getFrom().getId().toString();

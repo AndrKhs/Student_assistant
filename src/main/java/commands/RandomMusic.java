@@ -7,7 +7,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.io.FileNotFoundException;
 
 public class RandomMusic extends Command {
-    private static final Logger log = LogManager.getLogger(RandomMusic.class);
+    static final Logger log = LogManager.getLogger();
+
+    /**
+     * Метод для вывода рандомной музыки на команду "Слуйчаная музыка" от пользователя
+     * @param message
+     * @return
+     */
     @Override
     public String execute(Message message) {
         try {

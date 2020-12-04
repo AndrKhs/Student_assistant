@@ -3,6 +3,11 @@ package commands;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 public class Help extends Command{
+    /**
+     * Метод для ответа пользователю на команду "Помощь"
+     * @param message
+     * @return
+     */
     @Override
     public String execute(Message message) {
         StringBuilder sb = new StringBuilder();
