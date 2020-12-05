@@ -79,7 +79,6 @@ public class DateBaseBot implements BotProvider{
      */
     public String readDeadline(FileRequest file) throws IOException {
         StringBuilder sb = new StringBuilder();
-        StringBuilder sbDate = new StringBuilder();
         String [] checkDiscipline = file.getDisciplineDeadline().split("\\?" );
         if(checkDiscipline.length != 1) return sb.append(errorInput).append("Дисциплина").toString();
         sb.append(System.getProperty("user.dir")).append("\\Files\\");
@@ -91,16 +90,12 @@ public class DateBaseBot implements BotProvider{
                     .append(file.getDateDeadline())
                     .append("_")
                     .append(file.getDisciplineDeadline().toLowerCase());
-            sbDate.append(System.getProperty("user.dir"))
-                    .append("\\Files\\")
-                    .append(file.getGroupDeadline())
-                    .append("_")
-                    .append(date)
-                    .append("_")
-                    .append(file.getDisciplineDeadline().toLowerCase());
             File fi = new File(sb.toString());
             if(fi.exists()){
-                if(fi.equals(sbDate.toString())) fi.delete();
+                if(file.getDateDeadline().equals(date))
+                    if(fi.delete()){
+                        return "Дедлайн истек";
+                    };
                 StringBuilder builder = new StringBuilder();
                 builder.append(file.getGroupDeadline())
                         .append(" ")
@@ -169,6 +164,7 @@ public class DateBaseBot implements BotProvider{
     public String searchGroup(){
         StringBuilder sb = new StringBuilder();
         sb.append(System.getProperty("user.dir")).append("\\Files\\");
+        String date = new SimpleDateFormat("dd.MM.yyyy").format(new Date());
         Path path = Paths.get(sb.toString());
         if (Files.exists(path)) {
             File groups = new File(sb.toString());
@@ -176,7 +172,11 @@ public class DateBaseBot implements BotProvider{
             String l = null;
             for (String s : groups.list()) {
                 String [] group = s.split("_");
-                if(!group[0].equals(l)){
+                if(group[1].equals(date)) {
+                    File fil = new File(sb.append(s).toString());
+                    if (fil.delete()) {}
+                }
+                else if(!group[0].equals(l)){
                     l = group[0];
                     builder.append(group[0]).append("\n");
                 }
