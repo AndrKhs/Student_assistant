@@ -1,10 +1,10 @@
 package botAbility.FunctionsBot.ProviderBot;
 
-import botAbility.Consol.FileRequest;
+import botAbility.Console.FileRequest;
 import botAbility.FunctionsBot.BotAPI.BotAPI;
 import botAbility.FunctionsBot.BotAPI.BotCommunication;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -40,7 +40,7 @@ public class TelegramProvider extends TelegramLongPollingBot implements BotProvi
     /**
      * Константа для логирования
      */
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LoggerFactory.getLogger(TelegramProvider.class);
 
     /**
      * Метод для работы бота с чатом
@@ -57,7 +57,7 @@ public class TelegramProvider extends TelegramLongPollingBot implements BotProvi
             try {
                 sendMsg(message,botProvider.writeMusic(message.getAudio().getFileId()));
             } catch (IOException e) {
-                log.error(e);
+                log.error(e.toString());
             }
         }
         if (message.getPhoto() != null) sendMsg(message, "Я не знаю что тут \uD83D\uDE2D");
@@ -83,7 +83,7 @@ public class TelegramProvider extends TelegramLongPollingBot implements BotProvi
             setButtons(sendMessage);
             execute(sendMessage);
         } catch (TelegramApiException e) {
-            log.error(e);
+            log.error(e.toString());
         }
     }
 
@@ -105,7 +105,7 @@ public class TelegramProvider extends TelegramLongPollingBot implements BotProvi
                 resultStringBuilder.append(line);
             }
         } catch (IOException e) {
-            log.error(e);
+            log.error(e.toString());
         }
         String[] music = resultStringBuilder.toString().split("@");
         int rand = random.nextInt(music.length);
@@ -115,7 +115,7 @@ public class TelegramProvider extends TelegramLongPollingBot implements BotProvi
         try {
             execute(sendAudio);
         } catch (TelegramApiException e) {
-            log.error(e);
+            log.error(e.toString());
         }
     }
 
@@ -169,7 +169,7 @@ public class TelegramProvider extends TelegramLongPollingBot implements BotProvi
                 }
                 return resultStringBuilder.toString();
             } catch (IOException e) {
-                log.error(e);
+                log.error(e.toString());
             }
         }
         return "";
@@ -183,7 +183,7 @@ public class TelegramProvider extends TelegramLongPollingBot implements BotProvi
         try {
             return readToken();
         } catch (IOException e) {
-            log.error(e);
+            log.error(e.toString());
         }
         return "Error";
     }

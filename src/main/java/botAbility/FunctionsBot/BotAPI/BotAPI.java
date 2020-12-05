@@ -1,16 +1,16 @@
 package botAbility.FunctionsBot.BotAPI;
 
-import botAbility.Consol.*;
-import botAbility.Consol.FileRequest;
+import botAbility.Console.*;
+import botAbility.Console.FileRequest;
 import botAbility.FunctionsBot.ProviderBot.BotProvider;
 import botAbility.FunctionsBot.ProviderBot.DateBaseBot;
 import botAbility.FunctionsBot.ProviderBot.TelegramProvider;
 import commands.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import botAbility.Consol.RequestConsol;
+import botAbility.Console.RequestConsole;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -25,13 +25,13 @@ public class BotAPI implements BotCommunication {
     /**
      * Константа для логирования
      */
-    private static final Logger log = LogManager.getLogger(BotAPI.class);
+    private static final Logger log = LoggerFactory.getLogger(BotAPI.class);
 
     /**
      * Набор констант для обращения к методам из других клссов
      */
     private TelegramProvider send = new TelegramProvider();
-    private botConsol request = new RequestConsol();
+    private botConsole request = new RequestConsole();
     private BotProvider botProvider = new DateBaseBot();
 
     /**
@@ -123,7 +123,7 @@ public class BotAPI implements BotCommunication {
             }
 
         } catch (IOException e) {
-            log.error(e);
+            log.error(e.toString());
         }
         analyzeDate(message);
         return null;
@@ -275,7 +275,7 @@ public class BotAPI implements BotCommunication {
                 send.sendMsg(message, s.toString());
             }
         } catch (IOException e) {
-            log.error(e);
+            log.error(e.toString());
         }
     }
 
@@ -293,13 +293,13 @@ public class BotAPI implements BotCommunication {
             try {
                 request.writeRequest(idUser, date, mes);
             } catch (IOException e) {
-                log.error(e);
+                log.error(e.toString());
             }
             send.sendMsg(message, botProvider.searchDiscipline(request.readRequest(idUser, group), mes));
             send.sendMsg(message, "Напишите мне название учебной дисциплины");
             request.deleteRequest(idUser, requestUser);
         } catch (IOException e) {
-            log.error(e);
+            log.error(e.toString());
         }
     }
 }

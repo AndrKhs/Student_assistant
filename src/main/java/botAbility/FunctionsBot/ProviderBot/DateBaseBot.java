@@ -1,8 +1,8 @@
 package botAbility.FunctionsBot.ProviderBot;
 
-import botAbility.Consol.FileRequest;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import botAbility.Console.FileRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.io.*;
@@ -16,7 +16,7 @@ public class DateBaseBot implements BotProvider{
     /**
      * Константа для логирования
      */
-    private static final Logger log = LogManager.getLogger(DateBaseBot.class);
+    private static final Logger log = LoggerFactory.getLogger(DateBaseBot.class);
 
     /**
      * Набор сообщений об ошибках
@@ -127,7 +127,7 @@ public class DateBaseBot implements BotProvider{
         try {
             date = objectInputStream.readObject().toString();
         } catch (ClassNotFoundException e) {
-            log.error(e);
+            log.error(e.toString());
         }
         objectInputStream.close();
         return date;
@@ -157,7 +157,7 @@ public class DateBaseBot implements BotProvider{
             return "Музыка добавлена";
         }
         catch (IOException e) {
-            log.error(e);
+            log.error(e.toString());
         }
         return "Музыка не добавлена";
     }

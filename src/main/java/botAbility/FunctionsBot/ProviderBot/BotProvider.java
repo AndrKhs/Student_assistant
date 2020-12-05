@@ -1,6 +1,6 @@
 package botAbility.FunctionsBot.ProviderBot;
 
-import botAbility.Consol.FileRequest;
+import botAbility.Console.FileRequest;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.io.FileNotFoundException;
