@@ -17,13 +17,18 @@ public class Deadline extends Command{
      */
     @Override
     public String execute(Message message) {
+        log.info(message.getFrom().getUserName()+ " request Deadline");
         String idUser = message.getFrom().getId().toString();
         try {
-            request.writeRequest(idUser, Commands.Deadline.toString(), "");
-            send.sendMsg(message, getGroupList.searchGroup());
-            send.sendMsg(message, "Напишите мне существующую академическую группу");
+            if (!getGroupList.searchGroup().equals("\nСписок акакдемических групп пуст")) {
+                send.sendMsg(message, getGroupList.searchGroup());
+                send.sendMsg(message, "Напишите мне существующую академическую группу");
+                request.writeRequest(idUser, Commands.Back, "");
+                request.writeRequest(idUser, Commands.Deadline, "");
+            }
+            else send.sendMsg(message, "Дедлайнов нет");
         } catch (IOException e) {
-            log.error(e.toString());
+            log.error("Ошибка выполнения команды Deadline",e);
         }
         return null;
     }

@@ -18,12 +18,14 @@ public class Add extends Command{
     @Override
     public String execute(Message message) {
         String idUser = message.getFrom().getId().toString();
+        log.info(message.getFrom().getUserName() + " request Add");
         try {
-            request.writeRequest(idUser, Commands.Add.toString(), "");
+            request.writeRequest(idUser, Commands.Back, "");
+            request.writeRequest(idUser, Commands.Add, "");
             send.sendMsg(message, getGroupList.searchGroup());
             send.sendMsg(message, "Напишите мне существующую академическую группу");
         } catch (IOException e) {
-            log.error(e.toString());
+            log.error("Ошибка выполнения команды Add", e);
         }
         return null;
     }

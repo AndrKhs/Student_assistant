@@ -1,8 +1,11 @@
 package commands;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 public class Help extends Command{
+    private static final Logger log = LoggerFactory.getLogger(Help.class);
     /**
      * Метод для ответа пользователю на команду "Помощь"
      * @param message
@@ -10,6 +13,7 @@ public class Help extends Command{
      */
     @Override
     public String execute(Message message) {
+        log.info(message.getFrom().getUserName()+ " request Help");
         StringBuilder sb = new StringBuilder();
         sb.append("\"Помощь\" - список команд")
                 .append("\n")

@@ -17,13 +17,15 @@ public class Delete extends Command{
      */
     @Override
     public String execute(Message message) {
+        log.info(message.getFrom().getUserName() + " request Delete");
         String idUser = message.getFrom().getId().toString();
         try {
-            request.writeRequest(idUser, Commands.Delete.toString(), "");
+            request.writeRequest(idUser, Commands.Back, "");
+            request.writeRequest(idUser, Commands.Delete, "");
             send.sendMsg(message, getGroupList.searchGroup());
             send.sendMsg(message, "Напишите мне существующую академическую группу");
         } catch (IOException e) {
-            log.error(e.toString());
+            log.error("Ошибка выполнения команды Delete",e);
         }
         return null;
     }

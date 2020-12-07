@@ -54,14 +54,14 @@ public interface BotProvider {
      * @param date      Дедлайн
      * @return          Учебный предмет
      */
-    String searchDiscipline(String group, String date);
+    String searchDiscipline(Object group, String date);
 
     /**
      * Метод для поиска даты дедлайна
      * @param group     Учебная группа
      * @return          Дедлайн
      */
-    String searchDate(String group);
+    String searchDate(Object group);
 
     /**
      * Метод для отправки сообщения

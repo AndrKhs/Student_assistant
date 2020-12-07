@@ -1,8 +1,11 @@
 package botAbility.FunctionsBot.ProviderBot;
 
 import botAbility.Console.FileRequest;
+import botAbility.Console.RequestConsole;
+import botAbility.Console.botConsole;
 import botAbility.FunctionsBot.BotAPI.BotAPI;
 import botAbility.FunctionsBot.BotAPI.BotCommunication;
+import botAbility.FunctionsBot.BotAPI.Commands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -16,11 +19,16 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class TelegramProvider extends TelegramLongPollingBot implements BotProvider {
+
+    protected BotProvider getGroupList = new DateBaseBot();
 
     /**
      * Набор сообщений об ошибках
@@ -75,12 +83,13 @@ public class TelegramProvider extends TelegramLongPollingBot implements BotProvi
      * @param text      Текст для ответа на сообщение пользователя
      */
     public void sendMsg(Message message, String text) {
+        String idUser = message.getFrom().getId().toString();
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setText(text);
         try {
-            setButtons(sendMessage);
+            setButtons(sendMessage, idUser, message.getText());
             execute(sendMessage);
         } catch (TelegramApiException e) {
             log.error(e.toString());
@@ -93,6 +102,7 @@ public class TelegramProvider extends TelegramLongPollingBot implements BotProvi
      * @throws FileNotFoundException
      */
     public void sendAudio(Message message) throws FileNotFoundException {
+        log.info("Send audio " + message.getFrom().getUserName());
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
         sb.append(System.getProperty("user.dir")).append("\\Music\\").append("music");
@@ -123,7 +133,8 @@ public class TelegramProvider extends TelegramLongPollingBot implements BotProvi
      * Устанавливает кнопки в телеграмм чат
      * @param sendMessage сообщение бота для пользователя
      */
-    private synchronized void setButtons(SendMessage sendMessage) {
+    private synchronized void setButtons(SendMessage sendMessage, String idUser, String messege) {
+        botConsole request = new RequestConsole();
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
         replyKeyboardMarkup.setSelective(true);
@@ -132,13 +143,74 @@ public class TelegramProvider extends TelegramLongPollingBot implements BotProvi
         List<KeyboardRow> keyboardRowList = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
         KeyboardRow keyboardSecondRow = new KeyboardRow();
-        keyboardFirstRow.add(new KeyboardButton("Помощь"));
-        keyboardFirstRow.add(new KeyboardButton("Удалить"));
-        keyboardFirstRow.add(new KeyboardButton("Дедлайн"));
-        keyboardFirstRow.add(new KeyboardButton("Добавить"));
-        keyboardSecondRow.add(new KeyboardButton("Случайная музыка"));
+        KeyboardRow keyboardTriadRow = new KeyboardRow();
+        for(int i = 0; i < 3; i++){
+            if(request.searchRequest(idUser, Commands.valueOf(i)).equals(idUser + Commands.valueOf(i))){
+                String[] keyGroup= getGroupList.searchGroup().split("\n");
+                for(int j = 2; j < keyGroup.length; j++) {
+                    keyboardFirstRow.add(new KeyboardButton(keyGroup[j]));
+                }
+                keyboardSecondRow.add(new KeyboardButton("Назад"));
+            }
+        }
+        for(int i = 3; i < 6; i++){
+            if(request.searchRequest(idUser, Commands.valueOf(i)).equals(idUser + Commands.valueOf(i))){
+                keyboardFirstRow.clear();
+                keyboardSecondRow.clear();
+                keyboardTriadRow.clear();
+                String[] keyDate = getGroupList.searchDate(messege).split("\n");
+                for(int j = 2; j < keyDate.length; j++) {
+                    if(j<10) keyboardFirstRow.add(new KeyboardButton(keyDate[j]));
+                    if(j>9 & j<19) keyboardSecondRow.add(new KeyboardButton(keyDate[j]));
+                }
+                keyboardTriadRow.add(new KeyboardButton("Назад"));
+            }
+        }
+        for(int i = 6; i < 9; i++){
+            if(request.searchRequest(idUser, Commands.valueOf(i)).equals(idUser + Commands.valueOf(i))){
+                keyboardFirstRow.clear();
+                keyboardSecondRow.clear();
+                keyboardTriadRow.clear();
+                String[] keyDate = new String[0];
+                try {
+                    keyDate = getGroupList.searchDiscipline(request.readRequest(idUser, Commands.valueOf(i-3)),messege).split("\n");
+                } catch (IOException e) {
+                    log.error("Чет с кнопкой", e);
+                }
+                for(int j = 2; j < keyDate.length; j++) {
+                if(j<10) keyboardFirstRow.add(new KeyboardButton(keyDate[j]));
+                if(j>9 & j<19) keyboardSecondRow.add(new KeyboardButton(keyDate[j]));
+            }
+            keyboardTriadRow.add(new KeyboardButton("Назад"));
+            }
+        }
+        if(request.searchRequest(idUser, Commands.DeleteGroup).equals(idUser + Commands.DeleteGroup)){
+            keyboardFirstRow.clear();
+            keyboardSecondRow.clear();
+            keyboardTriadRow.clear();
+            StringBuilder sb = new StringBuilder();
+            sb.append(System.getProperty("user.dir")).append("\\Files\\");
+            Path path = Paths.get(sb.toString());
+            if (Files.exists(path)) {
+                File groups = new File(sb.toString());
+                for (String s : groups.list()) {
+                    String[] group = s.split("_");
+                    keyboardFirstRow.add(new KeyboardButton(group[0]));
+                }
+            }
+            keyboardTriadRow.add(new KeyboardButton("Назад"));
+        }
+        if(!request.searchRequest(idUser, Commands.Back).equals(idUser + Commands.Back)) {
+            keyboardFirstRow.add(new KeyboardButton("Помощь"));
+            keyboardFirstRow.add(new KeyboardButton("Дедлайн"));
+            keyboardFirstRow.add(new KeyboardButton("Добавить"));
+            keyboardSecondRow.add(new KeyboardButton("Случайная музыка"));
+            keyboardTriadRow.add(new KeyboardButton("Удалить дедлайн"));
+            keyboardTriadRow.add(new KeyboardButton("Удалить группу с дедлайнами"));
+        }
         keyboardRowList.add(keyboardFirstRow);
         keyboardRowList.add(keyboardSecondRow);
+        keyboardRowList.add(keyboardTriadRow);
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
     }
 
@@ -214,12 +286,12 @@ public class TelegramProvider extends TelegramLongPollingBot implements BotProvi
     }
 
     @Override
-    public String searchDiscipline(String group, String date) {
+    public String searchDiscipline(Object group, String date) {
         return null;
     }
 
     @Override
-    public String searchDate(String group) {
+    public String searchDate(Object group) {
         return null;
     }
 }

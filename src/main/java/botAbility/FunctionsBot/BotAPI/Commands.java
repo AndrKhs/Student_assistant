@@ -15,8 +15,12 @@ public enum Commands {
 
     DisciplineAdd,
     DisciplineDelete,
-    DisciplineDeadline;
+    DisciplineDeadline,
 
+    Back,
+    DeleteWholeDate,
+    DeleteGroupWholeDate,
+    DeleteGroup;
     public static Commands valueOf(int index) {
         return Commands.values()[index];
     }

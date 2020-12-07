@@ -38,12 +38,12 @@ public class DateBaseBot implements BotProvider{
                 .append("_")
                 .append(file.getDataAdd())
                 .append("_")
-                .append(file.getDisciplineAdd().toLowerCase());
+                .append(file.getDisciplineAdd().toString().toLowerCase());
         FileOutputStream outputStream = new FileOutputStream(sb.toString());
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
         objectOutputStream.writeObject("\n"+writed);
         objectOutputStream.close();
-        return file.getDataAdd();
+        return file.getDataAdd().toString();
     }
 
     /**
@@ -60,7 +60,7 @@ public class DateBaseBot implements BotProvider{
                 .append("_")
                 .append(file.getDateDelete())
                 .append("_")
-                .append(file.getDisciplineDelete().toLowerCase());
+                .append(file.getDisciplineDelete().toString().toLowerCase());
         final File fi = new File(sbDel.toString());
         if (fi.delete()) {
             sb.append("Дедлайн удален");
@@ -79,7 +79,7 @@ public class DateBaseBot implements BotProvider{
      */
     public String readDeadline(FileRequest file) throws IOException {
         StringBuilder sb = new StringBuilder();
-        String [] checkDiscipline = file.getDisciplineDeadline().split("\\?" );
+        String [] checkDiscipline = file.getDisciplineDeadline().toString().split("\\?" );
         if(checkDiscipline.length != 1) return sb.append(errorInput).append("Дисциплина").toString();
         sb.append(System.getProperty("user.dir")).append("\\Files\\");
         Path path = Paths.get(sb.toString());
@@ -89,7 +89,7 @@ public class DateBaseBot implements BotProvider{
                     .append("_")
                     .append(file.getDateDeadline())
                     .append("_")
-                    .append(file.getDisciplineDeadline().toLowerCase());
+                    .append(file.getDisciplineDeadline().toString().toLowerCase());
             File fi = new File(sb.toString());
             if(fi.exists()){
                 if(file.getDateDeadline().equals(date))
@@ -101,7 +101,7 @@ public class DateBaseBot implements BotProvider{
                         .append(" ")
                         .append(file.getDateDeadline())
                         .append(" ")
-                        .append(file.getDisciplineDeadline().toLowerCase())
+                        .append(file.getDisciplineDeadline().toString().toLowerCase())
                         .append(":")
                         .append(readFile(sb.toString()));
                 return builder.toString();
@@ -198,7 +198,7 @@ public class DateBaseBot implements BotProvider{
      * @param date      Дедлайн
      * @return          Учебный предмет
      */
-    public String searchDiscipline(String group, String date){
+    public String searchDiscipline(Object group, String date){
         StringBuilder sb = new StringBuilder();
         sb.append(System.getProperty("user.dir")).append("\\Files\\");
         Path path = Paths.get(sb.toString());
@@ -232,7 +232,7 @@ public class DateBaseBot implements BotProvider{
      * @param group     Учебная группа
      * @return          Дедлайн
      */
-    public String searchDate(String group){
+    public String searchDate(Object group){
         StringBuilder sb = new StringBuilder();
         sb.append(System.getProperty("user.dir")).append("\\Files\\");
         Path path = Paths.get(sb.toString());

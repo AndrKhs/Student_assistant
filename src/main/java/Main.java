@@ -17,13 +17,13 @@ public class Main {
      * @param args
      */
     public static void main(String[] args) {
-        log.info("BOT");
+        log.info("BOT start");
         ApiContextInitializer.init();
         TelegramBotsApi botApi = new TelegramBotsApi();
         try {
             botApi.registerBot(new TelegramProvider());
         } catch (TelegramApiException e) {
-            log.error(e.toString());
+            log.error("Error initialized", e);
         }
         log.info("Bot_Assistant_Students started.");
     }

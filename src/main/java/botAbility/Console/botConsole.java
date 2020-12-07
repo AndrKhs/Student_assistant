@@ -13,14 +13,14 @@ public interface botConsole {
      * @param command       Команда
      * @return              Если запрос был найден - возращает имя файла с запросом(userId + commandNumber)
      */
-    String searchRequest(String userId, String command);
+    String searchRequest(String userId, Object command);
 
     /**
      * Метод для удаления запроса пользователя
      * @param userId        Уникальный индификатор пользователя
      * @param command       команда
      */
-    void deleteRequest(String userId, String command);
+    void deleteRequest(String userId, Object command);
 
     /**
      * Метод для прочитать содержание запроса пользователя
@@ -29,7 +29,7 @@ public interface botConsole {
      * @return              Содержание запроса
      * @throws IOException
      */
-    String readRequest(String userId, String command) throws IOException;
+    Object readRequest(String userId, Object command) throws IOException;
 
     /**
      * Метод для сохранения запроса пользователя
@@ -39,6 +39,6 @@ public interface botConsole {
      * @return id пользователя
      * @throws IOException
      */
-    String writeRequest(String userId, String command, String input) throws IOException;
+    String writeRequest(String userId, Object command, String input) throws IOException;
 
 }

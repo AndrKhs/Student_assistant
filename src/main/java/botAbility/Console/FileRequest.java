@@ -1,85 +1,85 @@
 package botAbility.Console;
 
 public class FileRequest {
-    private String dataAdd;
-    private String groupAdd;
-    private String disciplineAdd;
-    private String dateDeadline;
-    private String groupDeadline;
-    private String dateDelete;
-    private String groupDelete;
-    private String disciplineDelete;
-    private String disciplineDeadline;
+    private Object dataAdd;
+    private Object groupAdd;
+    private Object disciplineAdd;
+    private Object dateDeadline;
+    private Object groupDeadline;
+    private Object dateDelete;
+    private Object groupDelete;
+    private Object disciplineDelete;
+    private Object disciplineDeadline;
 
-    public String getDataAdd() {
+    public Object getDataAdd() {
         return dataAdd;
     }
 
-    public void setDataAdd(String data) {
-        this.dataAdd = data;
+    public void setDataAdd(Object dataAdd) {
+        this.dataAdd = dataAdd;
     }
 
-    public String getGroupAdd() {
+    public Object getGroupAdd() {
         return groupAdd;
     }
 
-    public void setGroupAdd(String group) {
-        this.groupAdd = group;
+    public void setGroupAdd(Object groupAdd) {
+        this.groupAdd = groupAdd;
     }
 
-    public String getDisciplineAdd() {
+    public Object getDisciplineAdd() {
         return disciplineAdd;
     }
 
-    public void setDisciplineAdd(String disciplineAdd) {
+    public void setDisciplineAdd(Object disciplineAdd) {
         this.disciplineAdd = disciplineAdd;
     }
 
-    public String getDateDeadline() {
+    public Object getDateDeadline() {
         return dateDeadline;
     }
 
-    public void setDateDeadline(String dateDeadline) {
+    public void setDateDeadline(Object dateDeadline) {
         this.dateDeadline = dateDeadline;
     }
 
-    public String getGroupDeadline() {
+    public Object getGroupDeadline() {
         return groupDeadline;
     }
 
-    public void setGroupDeadline(String groupDeadline) {
+    public void setGroupDeadline(Object groupDeadline) {
         this.groupDeadline = groupDeadline;
     }
 
-    public String getDateDelete() {
+    public Object getDateDelete() {
         return dateDelete;
     }
 
-    public void setDateDelete(String dateDelete) {
+    public void setDateDelete(Object dateDelete) {
         this.dateDelete = dateDelete;
     }
 
-    public String getGroupDelete() {
+    public Object getGroupDelete() {
         return groupDelete;
     }
 
-    public void setGroupDelete(String groupDelete) {
+    public void setGroupDelete(Object groupDelete) {
         this.groupDelete = groupDelete;
     }
 
-    public String getDisciplineDelete() {
+    public Object getDisciplineDelete() {
         return disciplineDelete;
     }
 
-    public void setDisciplineDelete(String disciplineDelete) {
+    public void setDisciplineDelete(Object disciplineDelete) {
         this.disciplineDelete = disciplineDelete;
     }
 
-    public String getDisciplineDeadline() {
+    public Object getDisciplineDeadline() {
         return disciplineDeadline;
     }
 
-    public void setDisciplineDeadline(String disciplineDeadline) {
+    public void setDisciplineDeadline(Object disciplineDeadline) {
         this.disciplineDeadline = disciplineDeadline;
     }
 }

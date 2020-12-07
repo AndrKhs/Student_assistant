@@ -16,10 +16,11 @@ public class RandomMusic extends Command {
      */
     @Override
     public String execute(Message message) {
+        log.info(message.getFrom().getUserName() + " request RandomMusic");
         try {
             send.sendAudio(message);
         } catch (FileNotFoundException e) {
-            log.error(e.toString());
+            log.error("Ошибка выполнения команды RandomMusic",e);
         }
         return null;
     }

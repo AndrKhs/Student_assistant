@@ -15,13 +15,13 @@ public class RequestConsole implements botConsole {
      * @return              Если запрос был найден - возращает имя файла с запросом(userId + commandNumber)
      */
     @Override
-    public String searchRequest(String userId, String command) {
+    public String searchRequest(String userId, Object command) {
         StringBuilder sb = new StringBuilder();
         sb.append(System.getProperty("user.dir")).append("\\TimeDataBase\\").append(userId).append(command);
-        File fi = new File(sb.toString());
-        if (fi.exists()) {
+        File file = new File(sb.toString());
+        if (file.exists()) {
             return userId + command;
-        } else fi.delete();
+        } else file.delete();
         return "";
     }
 
@@ -31,11 +31,11 @@ public class RequestConsole implements botConsole {
      * @param command       команда
      */
     @Override
-    public void deleteRequest(String userId, String command) {
+    public void deleteRequest(String userId, Object command) {
         StringBuilder sb = new StringBuilder();
         sb.append(System.getProperty("user.dir")).append("\\TimeDataBase\\").append(userId).append(command);
-        File fi = new File(sb.toString());
-        fi.delete();
+        File file = new File(sb.toString());
+        file.delete();
     }
 
     /**
@@ -46,14 +46,14 @@ public class RequestConsole implements botConsole {
      * @throws IOException
      */
     @Override
-    public String readRequest(String userId, String command) throws IOException {
+    public Object readRequest(String userId, Object command) throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append(System.getProperty("user.dir")).append("\\TimeDataBase\\").append(userId).append(command);
         FileInputStream fileInputStream = new FileInputStream(sb.toString());
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-        String date = "";
+        Object date = "";
         try {
-            date = objectInputStream.readObject().toString();
+            date = objectInputStream.readObject();
         } catch (ClassNotFoundException e) {
             log.error(e.toString());
         }
@@ -70,7 +70,7 @@ public class RequestConsole implements botConsole {
      * @throws IOException
      */
     @Override
-    public String writeRequest(String userId, String command, String input) throws IOException {
+    public String writeRequest(String userId, Object command, String input) throws IOException {
 
         StringBuilder sb = new StringBuilder();
         sb.append(System.getProperty("user.dir")).append("\\TimeDataBase\\").append(userId).append(command);

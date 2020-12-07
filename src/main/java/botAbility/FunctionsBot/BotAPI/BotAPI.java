@@ -12,7 +12,11 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 import botAbility.Console.RequestConsole;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -51,9 +55,11 @@ public class BotAPI implements BotCommunication {
         map.put("/start", new Start());
         map.put("помощь", new Help());
         map.put("добавить", new Add());
-        map.put("удалить", new Delete());
+        map.put("удалить дедлайн", new Delete());
         map.put("случайная музыка", new RandomMusic());
         map.put("дедлайн", new Deadline());
+        map.put("назад", new Back());
+        map.put("удалить группу с дедлайнами", new DeleteGroup());
     }
 
     /**
@@ -66,59 +72,59 @@ public class BotAPI implements BotCommunication {
         String idUser = message.getFrom().getId().toString();
         String words = message.getText().toLowerCase();
         if (map.keySet().contains(words))
-            deleteAllRequest(idUser);
+            deleteAllRequest(message);
         try {
-            if (request.searchRequest(idUser, Commands.DateDelete.toString()).equals(idUser + Commands.DateDelete.toString())) {
+            if (request.searchRequest(idUser, Commands.DateDelete).equals(idUser + Commands.DateDelete)) {
                 FileRequest file = new FileRequest();
 
-                file.setDateDelete(request.readRequest(idUser, Commands.DateDelete.toString()));
+                file.setDateDelete(request.readRequest(idUser, Commands.DateDelete));
                 file.setDisciplineDelete(message.getText());
-                file.setGroupDelete(request.readRequest(idUser, Commands.GroupDelete.toString()));
+                file.setGroupDelete(request.readRequest(idUser, Commands.GroupDelete));
 
                 send.sendMsg(message, botProvider.deleteDeadline(file));
 
-                deleteAllRequest(idUser);
+                deleteAllRequest(message);
                 return null;
             }
-            if (request.searchRequest(idUser, Commands.DateDeadline.toString()).equals(idUser + Commands.DateDeadline.toString())) {
+            if (request.searchRequest(idUser, Commands.DateDeadline).equals(idUser + Commands.DateDeadline)) {
                 FileRequest file = new FileRequest();
 
-                file.setDateDeadline(request.readRequest(idUser, Commands.DateDeadline.toString()));
+                file.setDateDeadline(request.readRequest(idUser, Commands.DateDeadline));
                 file.setDisciplineDeadline(message.getText());
-                file.setGroupDeadline(request.readRequest(idUser, Commands.GroupDeadline.toString()));
+                file.setGroupDeadline(request.readRequest(idUser, Commands.GroupDeadline));
 
                 send.sendMsg(message, botProvider.readDeadline(file));
 
-                deleteAllRequest(idUser);
+                deleteAllRequest(message);
                 return null;
 
             }
-            if (request.searchRequest(idUser, Commands.DisciplineAdd.toString()).equals(idUser + Commands.DisciplineAdd.toString())) {
+            if (request.searchRequest(idUser, Commands.DisciplineAdd).equals(idUser + Commands.DisciplineAdd)) {
                 FileRequest file = new FileRequest();
 
-                file.setDataAdd(request.readRequest(idUser, Commands.DateAdd.toString()));
-                file.setDisciplineAdd(request.readRequest(idUser, Commands.DisciplineAdd.toString()));
-                file.setGroupAdd(request.readRequest(idUser, Commands.GroupAdd.toString()));
+                file.setDataAdd(request.readRequest(idUser, Commands.DateAdd));
+                file.setDisciplineAdd(request.readRequest(idUser, Commands.DisciplineAdd));
+                file.setGroupAdd(request.readRequest(idUser, Commands.GroupAdd));
 
                 sb.append("Дедлайн создан ").append(botProvider.writeFile(file, message.getText()));
                 send.sendMsg(message, sb.toString());
                 sb.delete(0, sb.length());
-                deleteAllRequest(idUser);
+                deleteAllRequest(message);
                 return null;
             }
-            if (request.searchRequest(idUser, Commands.DateAdd.toString()).equals(idUser + Commands.DateAdd.toString())) {
+            if (request.searchRequest(idUser, Commands.DateAdd).equals(idUser + Commands.DateAdd)) {
                 request.writeRequest(idUser, Commands.DisciplineAdd.toString(), message.getText());
-                sb.append("Напишите мне что вам задали по ").append(request.readRequest(idUser, Commands.DisciplineAdd.toString()));
+                sb.append("Напишите мне что вам задали по ").append(request.readRequest(idUser, Commands.DisciplineAdd));
                 send.sendMsg(message, sb.toString());
                 sb.delete(0, sb.length());
                 return null;
             }
-            if (request.searchRequest(idUser, Commands.DateDelete.toString()).equals(idUser + Commands.DateDelete.toString())) {
-                request.writeRequest(idUser, Commands.DisciplineDelete.toString(), message.getText());
+            if (request.searchRequest(idUser, Commands.DateDelete).equals(idUser + Commands.DateDelete)) {
+                request.writeRequest(idUser, Commands.DisciplineDelete, message.getText());
                 return null;
             }
-            if (request.searchRequest(idUser, Commands.DateDeadline.toString()).equals(idUser + Commands.DateDeadline.toString())) {
-                request.writeRequest(idUser, Commands.DisciplineDeadline.toString(), message.getText());
+            if (request.searchRequest(idUser, Commands.DateDeadline).equals(idUser + Commands.DateDeadline)) {
+                request.writeRequest(idUser, Commands.DisciplineDeadline, message.getText());
                 return null;
             }
 
@@ -137,24 +143,24 @@ public class BotAPI implements BotCommunication {
      */
     private String analyzeDate(Message message) {
         String idUser = message.getFrom().getId().toString();
-        if (request.searchRequest(idUser, Commands.GroupAdd.toString()).equals(idUser + Commands.GroupAdd.toString())) {
+        if (request.searchRequest(idUser, Commands.GroupAdd).equals(idUser + Commands.GroupAdd)) {
             String mes = message.getText();
-            if (checkDate(mes, message).equals(null)) return null;
-            writeRequestDeadline(Commands.DateAdd.toString(), Commands.GroupAdd.toString(), Commands.Add.toString(), message);
+            if (checkDate(mes, message).equals("false")) return null;
+            writeRequestDeadline(Commands.DateAdd, Commands.GroupAdd, Commands.Add, message);
             request.deleteRequest(idUser, Commands.Add.toString());
             return null;
         }
-        if (request.searchRequest(idUser, Commands.GroupDelete.toString()).equals(idUser + Commands.GroupDelete.toString())) {
+        if (request.searchRequest(idUser, Commands.GroupDelete).equals(idUser + Commands.GroupDelete)) {
             String mes = message.getText();
-            if (checkDate(mes, message).equals(null)) return null;
-            writeRequestDeadline(Commands.DateDelete.toString(), Commands.GroupDelete.toString(), Commands.Delete.toString(), message);
+            if (checkDate(mes, message).equals("false")) return null;
+            writeRequestDeadline(Commands.DateDelete, Commands.GroupDelete, Commands.Delete, message);
             request.deleteRequest(idUser, Commands.Delete.toString());
             return null;
         }
-        if (request.searchRequest(idUser, Commands.GroupDeadline.toString()).equals(idUser + Commands.GroupDeadline.toString())) {
+        if (request.searchRequest(idUser, Commands.GroupDeadline).equals(idUser + Commands.GroupDeadline)) {
             String mes = message.getText();
-            if (checkDate(mes, message).equals(null)) return null;
-            writeRequestDeadline(Commands.DateDeadline.toString(), Commands.GroupDeadline.toString(), Commands.Deadline.toString(), message);
+            if (checkDate(mes, message).equals("false")) return null;
+            writeRequestDeadline(Commands.DateDeadline, Commands.GroupDeadline, Commands.Deadline, message);
             request.deleteRequest(idUser, Commands.Deadline.toString());
             return null;
         }
@@ -162,6 +168,132 @@ public class BotAPI implements BotCommunication {
         return null;
     }
 
+    /**
+     * Метод
+     * @param message   Сообщение пользователся обратившийся к боту
+     * @return          null
+     */
+    private String analyzeGroup(Message message) {
+        String idUser = message.getFrom().getId().toString();
+        if (request.searchRequest(idUser, Commands.Deadline).equals(idUser + Commands.Deadline)) {
+            writeRequestGroup(Commands.GroupDeadline, message);
+            return null;
+        }
+        if (request.searchRequest(idUser, Commands.Delete).equals(idUser + Commands.Delete)) {
+            writeRequestGroup(Commands.GroupDelete, message);
+            return null;
+        }
+        if (request.searchRequest(idUser, Commands.Add).equals(idUser + Commands.Add)) {
+            writeRequestGroup(Commands.GroupAdd, message);
+            return null;
+        }
+        if(request.searchRequest(idUser, Commands.DeleteGroup).equals(idUser + Commands.DeleteGroup)) {
+            gropeDelete(message);
+            return null;
+        }
+        checkCommand(message);
+        return null;
+    }
+
+    /**
+     * Метод для проверки команды в HashMap
+     * @param message       Сообщение пользователся обратившийся к боту
+     */
+    private void checkCommand(Message message) {
+        Command command = map.get(message.getText().toLowerCase());
+        if (command == null) send.sendMsg(message, errorUnknowCommand);
+        else command.execute(message);
+    }
+
+    private String gropeDelete(Message message){
+        StringBuilder sb = new StringBuilder();
+        sb.append(System.getProperty("user.dir")).append("\\Files\\");
+        String words = message.getText();
+        String[] number = words.split("-");
+        if(number.length == 2){
+            String lenOne = number[0];
+            String lenTwo = number[1];
+            if (number.length == 2 && lenOne.length() < 4 && lenOne.length() > 1 && lenTwo.length() == 6) {
+                Path path = Paths.get(sb.toString());
+                if (Files.exists(path)) {
+                    File groups = new File(sb.toString());
+                    for (String s : groups.list()) {
+                        String[] group = s.split("_");
+                        if (group[0].equals(message.getText())) {
+                            File file = new File(sb.append(s).toString());
+                            if (file.delete()) {
+                                send.sendMsg(message,"Удалил");
+                                return null;
+                            }
+                        }
+                    }
+                }
+            }
+            else send.sendMsg(message, errorInput + "некоректный ввод группы");
+        }
+        else send.sendMsg(message, errorInput + "некоректный ввод группы");
+        return null;
+    }
+
+
+    private void deleteAllRequest(Message message) {
+        String idUser = message.getFrom().getId().toString();
+        for (int i = 0; i < Commands.values().length; i++)
+            request.deleteRequest(idUser, Commands.valueOf(i));
+    }
+
+    /**
+     * Метод для сохранения учебной группы введенным пользователем
+     * @param command       Команда запроса
+     * @param message       Сообщение пользователся обратившийся к боту
+     */
+    private String writeRequestGroup(Object command, Message message) {
+        String words = message.getText();
+        String idUser = message.getFrom().getId().toString();
+        String[] number = words.split("-");
+        if(number.length == 2){
+            String lenOne = number[0];
+            String lenTwo = number[1];
+            try {
+                if (number.length == 2 && lenOne.length() < 4 && lenOne.length() > 1 && lenTwo.length() == 6) {
+                    request.writeRequest(idUser, command, words);
+                    send.sendMsg(message, botProvider.searchDate(words));
+                    send.sendMsg(message, "Напишите мне ДД.ММ.ГГГГ дедлайна");
+                }
+            } catch (IOException e) {
+                log.error(e.toString());
+            }
+        }
+        else {
+            send.sendMsg(message, errorInput + "Группа");
+            deleteAllRequest(message);
+        }
+        return null;
+    }
+
+    /**
+     * Метод для сохранения дедлайна введенным пользователем
+     * @param date              Дедлайн
+     * @param group             Учебная группа
+     * @param requestUser       Запрос пользователя
+     * @param message           Сообщение пользователся обратившийся к боту
+     */
+    private void writeRequestDeadline(Object date, Object group, Object requestUser, Message message) {
+        String mes = message.getText();
+        String idUser = message.getFrom().getId().toString();
+        try {
+            try {
+                request.writeRequest(idUser, date, mes);
+            } catch (IOException e) {
+                log.error(e.toString());
+            }
+            send.sendMsg(message, botProvider.searchDiscipline(request.readRequest(idUser, group), mes));
+            send.sendMsg(message, "Напишите мне название учебной дисциплины");
+            request.deleteRequest(idUser, requestUser);
+        } catch (IOException e) {
+            log.error(e.toString());
+        }
+    }
 
     /**
      * Метод для проверки правильности ввода дедлайна
@@ -178,128 +310,36 @@ public class BotAPI implements BotCommunication {
             sb.append(send.errorInput).append("дедлайн");
             send.sendMsg(message, sb.toString());
             sb.delete(0, sb.length());
-            return null;
+            return "false";
         }
         final int IntWords1 = Integer.parseInt(word[0]);
         if ((IntWords1 > 31) || (IntWords1 < 1)) {
             sb.append(send.errorInput).append("день");
             send.sendMsg(message, sb.toString());
             sb.delete(0, sb.length());
-            return null;
+            return "false";
         }
         final int IntWords2 = Integer.parseInt(word[1]);
         if ((IntWords2 > 12) || (IntWords2 < 1)) {
             sb.append(send.errorInput).append("месяц");
             send.sendMsg(message, sb.toString());
             sb.delete(0, sb.length());
-            return null;
+            return "false";
         }
         final int IntWords3 = Integer.parseInt(word[2]);
         if (IntWords3 < Integer.parseInt(year)) {
             sb.append(send.errorInput).append("год");
             send.sendMsg(message, sb.toString());
             sb.delete(0, sb.length());
-            return null;
+            return "false";
         }
         for (String wor : word)
             if (wor.length() > 5) {
                 sb.append(send.errorInput).append("дедлайн");
                 send.sendMsg(message, sb.toString());
                 sb.delete(0, sb.length());
-                return null;
+                return "false";
             }
         return "True";
-    }
-
-    /**
-     * Метод
-     * @param message   Сообщение пользователся обратившийся к боту
-     * @return          null
-     */
-    private String analyzeGroup(Message message) {
-        String idUser = message.getFrom().getId().toString();
-        if (request.searchRequest(idUser, Commands.Deadline.toString()).equals(idUser + Commands.Deadline.toString())) {
-            writeRequestGroup(Commands.GroupDeadline.toString(), message);
-            return null;
-        }
-        if (request.searchRequest(idUser, Commands.Delete.toString()).equals(idUser + Commands.Delete.toString())) {
-            writeRequestGroup(Commands.GroupDelete.toString(), message);
-            return null;
-        }
-        if (request.searchRequest(idUser, Commands.Add.toString()).equals(idUser + Commands.Add.toString())) {
-            writeRequestGroup(Commands.GroupAdd.toString(), message);
-            return null;
-        }
-        checkCommand(message);
-        return null;
-    }
-
-    /**
-     * Метод для проверки команды в HashMap
-     * @param message       Сообщение пользователся обратившийся к боту
-     */
-    private void checkCommand(Message message) {
-        Command command = map.get(message.getText().toLowerCase());
-        if (command == null) send.sendMsg(message, errorUnknowCommand);
-        command.execute(message);
-    }
-
-    /**
-     * Метод для удаления всех запросов
-     * @param idUser        Уникальный индификатор пользователя
-     */
-    private void deleteAllRequest(String idUser) {
-        for (int i = 0; i < Commands.values().length; i++)
-            request.deleteRequest(idUser, Commands.valueOf(i).toString());
-    }
-
-    /**
-     * Метод для сохранения учебной группы введенным пользователем
-     * @param command       Команда запроса
-     * @param message       Сообщение пользователся обратившийся к боту
-     */
-    private void writeRequestGroup(String command, Message message) {
-        String words = message.getText();
-        String idUser = message.getFrom().getId().toString();
-        String[] number = words.split("-");
-        String lenOne = number[0];
-        String lenTwo = number[1];
-        try {
-            if (number.length == 2 && lenOne.length() < 4 && lenOne.length() > 1 && lenTwo.length() == 6) {
-                request.writeRequest(idUser, command, words);
-                send.sendMsg(message, botProvider.searchDate(words));
-                send.sendMsg(message, "Напишите мне ДД.ММ.ГГГГ дедлайна");
-            } else {
-                StringBuilder s = new StringBuilder();
-                s.append(errorInput).append("Группа");
-                send.sendMsg(message, s.toString());
-            }
-        } catch (IOException e) {
-            log.error(e.toString());
-        }
-    }
-
-    /**
-     * Метод для сохранения дедлайна введенным пользователем
-     * @param date              Дедлайн
-     * @param group             Учебная группа
-     * @param requestUser       Запрос пользователя
-     * @param message           Сообщение пользователся обратившийся к боту
-     */
-    private void writeRequestDeadline(String date, String group, String requestUser, Message message) {
-        String mes = message.getText();
-        String idUser = message.getFrom().getId().toString();
-        try {
-            try {
-                request.writeRequest(idUser, date, mes);
-            } catch (IOException e) {
-                log.error(e.toString());
-            }
-            send.sendMsg(message, botProvider.searchDiscipline(request.readRequest(idUser, group), mes));
-            send.sendMsg(message, "Напишите мне название учебной дисциплины");
-            request.deleteRequest(idUser, requestUser);
-        } catch (IOException e) {
-            log.error(e.toString());
-        }
     }
 }
