@@ -29,7 +29,7 @@ public class Deadline extends Command{
                 send.sendMsg(message, getGroupList.searchGroup());
                 send.sendMsg(message, "Напишите мне существующую академическую группу");
             }
-            else send.sendMsg(message, "Дедлайнов нет,вернитесь назад");
+            else send.sendMsg(message, "Дедлайнов нет");
         } catch (IOException e) {
             log.error("Ошибка выполнения команды Deadline",e);
         }
