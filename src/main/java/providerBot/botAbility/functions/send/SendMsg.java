@@ -63,8 +63,8 @@ public class SendMsg extends Send{
 
     /**
      * Метод для обновление клавиатуры бота
-     * @param sendMessage
-     * @param idUser
+     * @param sendMessage   Отправление сообщения
+     * @param idUser        Идентификатор
      */
     private synchronized void setButtons(SendMessage sendMessage, String idUser) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
