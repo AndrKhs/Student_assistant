@@ -1,0 +1,56 @@
+package providerBot.botAbility.checks.validate;
+
+import providerBot.botAbility.constants.CommandsEnum;
+import providerBot.botAbility.functions.seekers.ISeekers;
+import providerBot.botAbility.functions.seekers.Seekers;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * Класс проверок
+ */
+public class Validate implements IValidate {
+    /**
+     * Константа для поиска файла
+     */
+    private final ISeekers seekers = new Seekers();
+
+    @Override
+    public boolean isExist (String idUser, CommandsEnum command){
+        return seekers.searchRequest(idUser, command).equals(idUser + command);
+    }
+
+    @Override
+    public boolean checkDay(int day){
+        if ((day > 31) || (day < 1)) return false;
+        return true;
+    }
+
+    @Override
+    public boolean checkMonth(int month){
+        if ((month > 12) || (month < 1)) return false;
+        return true;
+    }
+
+    @Override
+    public boolean checkYear(int year){
+        String currentYear = new SimpleDateFormat("yyyy").format(new Date());
+        if (year < Integer.parseInt(currentYear)) return false;
+        return true;
+    }
+
+    @Override
+    public boolean checkFormatDate(String[] dateLength){
+        if (dateLength.length != 3) return false;
+        return true;
+
+    }
+
+    @Override
+    public boolean checkLengthDate(String[] dateLength){
+        for (String date : dateLength)
+            if (date.length() > 5) return false;
+        return true;
+    }
+}
