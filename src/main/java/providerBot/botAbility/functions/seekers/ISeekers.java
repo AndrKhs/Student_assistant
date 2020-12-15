@@ -29,7 +29,7 @@ public interface ISeekers {
 
     /**
      * Метод для поиска запроса пользователя
-     * @param userId        Уникальный индификатор пользователя
+     * @param userId        Уникальный идентификатор пользователя
      * @param command       Команда
      * @return              Если запрос был найден - возращает имя файла с запросом(userId + commandNumber)
      */
