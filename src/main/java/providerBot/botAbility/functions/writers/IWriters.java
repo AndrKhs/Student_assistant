@@ -14,7 +14,7 @@ import java.io.IOException;
 public interface IWriters {
     /**
      * Метод для сериализации начала функции
-     * @param userId        Идентификатор пользователя
+     * @param userId        Уникальный идентификато пользователя
      * @param command       Команда
      * @param input         Ввод пользователя
      * @throws IOException
@@ -23,7 +23,7 @@ public interface IWriters {
 
     /**
      * Метод для сериализации группы
-     * @param userId        Идентификатор пользователя
+     * @param userId        Уникальный идентификато пользователя
      * @param command       Команда
      * @param input         Ввод пользователя
      * @throws IOException
@@ -32,7 +32,7 @@ public interface IWriters {
 
     /**
      * Метод для сериализации даты
-     * @param userId        Идентификатор пользователя
+     * @param userId        Уникальный идентификато пользователя
      * @param command       Команда
      * @param input         Ввод пользователя
      * @throws IOException
@@ -41,7 +41,7 @@ public interface IWriters {
 
     /**
      * Метод для сериализации дисциплины
-     * @param userId        Идентификатор пользователя
+     * @param userId        Уникальный идентификато пользователя
      * @param command       Команда
      * @param input         Ввод пользователя
      * @throws IOException
