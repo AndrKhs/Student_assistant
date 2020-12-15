@@ -34,10 +34,10 @@ public interface IRemoving {
 
     /**
      * Метод для удаления дедлайна
-     * @param date
-     * @param group
-     * @param message
-     * @return
+     * @param date      Сущность дат
+     * @param group     Сущность групп
+     * @param message   Сообщение пользователя обратившийся к боту
+     * @return          Удален ли дедлайн
      */
     String deleteDeadline(EndDate date, Group group, String message);
 }
