@@ -9,9 +9,9 @@ public interface IValidate {
 
     /**
      * Метод для проверки существования файла состояния пользователя
-     * @param idUser
-     * @param command
-     * @return
+     * @param idUser        Уникальный идентификатор пользователя
+     * @param command       Команда
+     * @return              True если файл найден
      */
     boolean isExist (String idUser, CommandsEnum command);
 
