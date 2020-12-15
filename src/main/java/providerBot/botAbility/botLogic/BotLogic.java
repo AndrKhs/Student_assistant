@@ -177,11 +177,11 @@ public class BotLogic implements IBotLogic {
 
     /**
      * Метод для проверка даты
-     * @param idUser
-     * @param group
-     * @param date
-     * @param command
-     * @param message
+     * @param idUser        Уникальный идентификатор пользователя
+     * @param group         Сущность группы
+     * @param date          Сущность даты
+     * @param command       Команда
+     * @param message       Сообщение пользователя обратившийся к боту
      */
     private void analyzeDateCheck(String idUser, CommandsEnum group, CommandsEnum date, CommandsEnum command, Message message){
         StringBuilder sb = new StringBuilder();
@@ -227,7 +227,7 @@ public class BotLogic implements IBotLogic {
 
     /**
      * Метод завершающий проверку состояния пользователя
-     * @param message
+     * @param message       Собщение пользователя обратившийся к боту
      */
     private void manipulations(Message message) {
         String idUser = message.getFrom().getId().toString();
