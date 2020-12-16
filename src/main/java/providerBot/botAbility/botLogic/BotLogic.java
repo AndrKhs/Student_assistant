@@ -149,17 +149,17 @@ public class BotLogic implements IBotLogic {
         User user = new User(message);
         if (validate.isExist(user.id, Commands.GroupAdd)) {
             log.info(message.getFrom().getUserName() + Constant.PERFORMS_DATE.getConstant());
-            analyzeDateCheck(user.id, Commands.GroupAdd, Commands.DateAdd, Commands.Add, message);
+            analyzeDateCheck(Commands.GroupAdd, Commands.DateAdd, Commands.Add, message);
             return;
         }
         if (validate.isExist(user.id, Commands.GroupDelete)) {
             log.info(message.getFrom().getUserName() + Constant.PERFORMS_DATE.getConstant());
-            analyzeDateCheck(user.id, Commands.GroupDelete, Commands.DateDelete, Commands.Delete, message);
+            analyzeDateCheck(Commands.GroupDelete, Commands.DateDelete, Commands.Delete, message);
             return;
         }
         if (validate.isExist(user.id, Commands.GroupDeadline)) {
             log.info(message.getFrom().getUserName() + Constant.PERFORMS_DATE.getConstant());
-            analyzeDateCheck(user.id, Commands.GroupDeadline, Commands.DateDeadline, Commands.Deadline, message);
+            analyzeDateCheck(Commands.GroupDeadline, Commands.DateDeadline, Commands.Deadline, message);
             return;
         }
         if (validate.isExist(user.id, Commands.DeleteGroupWholeDate)) {
@@ -178,13 +178,12 @@ public class BotLogic implements IBotLogic {
 
     /**
      * Метод для проверка даты
-     * @param idUser
      * @param group
      * @param date
      * @param command
      * @param message
      */
-    private void analyzeDateCheck(String idUser, Commands group, Commands date, Commands command, Message message){
+    private void analyzeDateCheck(Commands group, Commands date, Commands command, Message message){
         StringBuilder sb = new StringBuilder();
         String mes = message.getText();
         sb.setLength(0);
