@@ -38,40 +38,36 @@ public class FileRemover implements IFileRemover {
         String words = message.getText();
         if (action.equals("date")) words = group.group;
         String[] decryption = words.split("-");
-        try {
-            if (decryption.length == 2) {
-                String GroupCode = decryption[0];
-                String GroupNumber = decryption[1];
-                if (GroupCode.length() < 4 && GroupCode.length() > 1 && GroupNumber.length() == 6) {
-                    if (Files.exists(Paths.get(sb.toString()))) {
-                        File file = new File(sb.toString());
-                        try {
-                            for (String path : file.list()) {
-                                Object[] groups = path.split("_");
-                                if (action.equals("date") && groups[0].equals(group) && groups[1].equals(message.getText())) {
-                                    File fileHomeWork = new File(sb.append(path).toString());
-                                    if (fileHomeWork.delete()) {
-                                        sendMsg.execute(message, Constant.REMOVE.getConstant());
-                                        return;
-                                    }
-                                }
-                                if (groups[0].equals(message.getText())) {
-                                    File fileHomeWork = new File(sb.append(path).toString());
-                                    if (fileHomeWork.delete()) {
-                                        sendMsg.execute(message, Constant.REMOVE.getConstant());
-                                        return;
-                                    }
+        if (decryption.length == 2) {
+            String GroupCode = decryption[0];
+            String GroupNumber = decryption[1];
+            if (GroupCode.length() < 4 && GroupCode.length() > 1 && GroupNumber.length() == 6) {
+                if (Files.exists(Paths.get(sb.toString()))) {
+                    File file = new File(sb.toString());
+                    try {
+                        for (String path : file.list()) {
+                            Object[] groups = path.split("_");
+                            if (action.equals("date") && groups[0].equals(group) && groups[1].equals(message.getText())) {
+                                File fileHomeWork = new File(sb.append(path).toString());
+                                if (fileHomeWork.delete()) {
+                                    sendMsg.execute(message, Constant.REMOVE.getConstant());
+                                    return;
                                 }
                             }
-                        }catch (NullPointerException e){
-                            log.error("Error not find file", e);
+                            if (groups[0].equals(message.getText())) {
+                                File fileHomeWork = new File(sb.append(path).toString());
+                                if (fileHomeWork.delete()) {
+                                    sendMsg.execute(message, Constant.REMOVE.getConstant());
+                                    return;
+                                }
+                            }
                         }
+                    } catch (NullPointerException e) {
+                        log.error("Error not find file", e);
                     }
                 }
-            } else sendMsg.execute(message, ConstantError.INVALID_GROUP_INPUT.gerError());
-        }catch (SecurityException e){
-            log.error("ASD", e);
-        }
+            }
+        } else sendMsg.execute(message, ConstantError.INVALID_GROUP_INPUT.gerError());
     }
 
     @Override
