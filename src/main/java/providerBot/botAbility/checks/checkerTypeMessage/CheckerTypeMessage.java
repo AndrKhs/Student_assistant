@@ -5,7 +5,7 @@ import providerBot.botAbility.constants.ConstantError;
 import providerBot.botAbility.functions.send.SendMsg;
 import providerBot.botAbility.botLogic.IBotLogic;
 import providerBot.botAbility.botLogic.BotLogic;
-import providerBot.botAbility.functions.writers.Writers;
+import providerBot.botAbility.functions.writers.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -24,7 +24,7 @@ public class CheckerTypeMessage implements ICheckerTypeMessage {
     /**
      * Константа для записи музыки
      */
-    private final Writers write = new Writers();
+    private final Writer write = new Writer();
 
     /**
      * Константа для логирования
@@ -39,7 +39,7 @@ public class CheckerTypeMessage implements ICheckerTypeMessage {
             sendMsg.execute(message, Constant.MESSAGE_PROCESSING_STICKER.getConstant());
         if (message.getAudio() != null) {
             try {
-                sendMsg.execute (message,write.writeMusic(message.getAudio().getFileId()));
+                sendMsg.execute (message,write.music(message.getAudio().getFileId()));
             } catch (IOException e) {
                 log.error(ConstantError.SEND_MUSIC_USER.gerError(),e);
             }

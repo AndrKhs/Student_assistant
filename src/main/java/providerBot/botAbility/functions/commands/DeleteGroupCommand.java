@@ -3,8 +3,8 @@ package providerBot.botAbility.functions.commands;
 import providerBot.botAbility.constants.Constant;
 import providerBot.botAbility.constants.ConstantError;
 import providerBot.botAbility.functions.send.SendMsg;
-import providerBot.botAbility.functions.writers.Writers;
-import providerBot.botAbility.constants.CommandsEnum;
+import providerBot.botAbility.functions.writers.Writer;
+import providerBot.botAbility.constants.Commands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -29,12 +29,11 @@ public class DeleteGroupCommand extends Command{
      */
     @Override
     public void execute(Message message) {
-        Writers write = new Writers();
-        String idUser = message.getFrom().getId().toString();
+        Writer write = new Writer();
         log.info(message.getFrom().getUserName() + " request DeleteGroup");
         try {
-            write.writeRequest(idUser, CommandsEnum.Back, "");
-            write.writeRequest(idUser, CommandsEnum.DeleteGroup, "");
+            write.request(message, Commands.Back, "");
+            write.request(message, Commands.DeleteGroup, "");
             sendMsg.execute(message, Constant.WRITE_GROPE_DELETE.getConstant());
         } catch (IOException e) {
             log.error(ConstantError.COMMAND_DELETE_GROUP.gerError(), e);

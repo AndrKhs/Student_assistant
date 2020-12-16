@@ -1,12 +1,10 @@
 package providerBot.botAbility.functions.send;
 
-import providerBot.botAbility.checks.validate.IValidate;
-import providerBot.botAbility.checks.validate.Validate;
-import providerBot.botAbility.constants.CommandsEnum;
+import providerBot.botAbility.checks.validate.IValidator;
+import providerBot.botAbility.checks.validate.Validator;
+import providerBot.botAbility.constants.Commands;
 import providerBot.botAbility.constants.Constant;
 import providerBot.botAbility.constants.ConstantError;
-import providerBot.botAbility.functions.requests.IRequests;
-import providerBot.botAbility.functions.requests.Requests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -15,8 +13,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import providerBot.botAbility.functions.seekers.ISeekers;
-import providerBot.botAbility.functions.seekers.Seekers;
+import providerBot.botAbility.essences.User;
+import providerBot.botAbility.functions.seekers.ISearch;
+import providerBot.botAbility.functions.seekers.Search;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +32,7 @@ public class SendMsg extends Send{
     /**
      * Константа для проверки
      */
-    private final IValidate validate = new Validate();
-
-    /**
-     * Константа для поиска файла
-     */
-    private final ISeekers seekers = new Seekers();
+    private final IValidator validate = new Validator();
 
     /**
      * Метод для отправки сообщения
@@ -47,13 +41,13 @@ public class SendMsg extends Send{
      */
     @Override
     public void execute(Message message, String text) {
-        String idUser = message.getFrom().getId().toString();
+        User user = new User(message);
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setText(text);
         try {
-            setButtons(sendMessage, idUser);
+            setButtons(sendMessage, user.id);
             execute(sendMessage);
         } catch (TelegramApiException e) {
             log.error(ConstantError.SEND_MESSAGE.gerError(),e);
@@ -63,8 +57,8 @@ public class SendMsg extends Send{
 
     /**
      * Метод для обновление клавиатуры бота
-     * @param sendMessage   Отправление сообщения
-     * @param idUser        Уникальный идентификатор пользователя
+     * @param sendMessage
+     * @param idUser
      */
     private synchronized void setButtons(SendMessage sendMessage, String idUser) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
@@ -76,12 +70,12 @@ public class SendMsg extends Send{
         KeyboardRow keyboardFirstRow = new KeyboardRow();
         KeyboardRow keyboardSecondRow = new KeyboardRow();
         KeyboardRow keyboardTriadRow = new KeyboardRow();
-        if (validate.isExist(idUser, CommandsEnum.Add) || validate.isExist(idUser, CommandsEnum.Deadline)
-                || validate.isExist(idUser, CommandsEnum.Delete) || validate.isExist(idUser, CommandsEnum.DeleteGroup)
-                || validate.isExist(idUser, CommandsEnum.DeleteWholeDate)) {
+        if (validate.isExist(idUser, Commands.Add) || validate.isExist(idUser, Commands.Deadline)
+                || validate.isExist(idUser, Commands.Delete) || validate.isExist(idUser, Commands.DeleteGroup)
+                || validate.isExist(idUser, Commands.DeleteWholeDate)) {
             keyboardTriadRow.add(new KeyboardButton("Назад"));
         }
-        if (validate.isExist(idUser, CommandsEnum.CommandDelete)) {
+        if (validate.isExist(idUser, Commands.CommandDelete)) {
             keyboardFirstRow.clear();
             keyboardSecondRow.clear();
             keyboardTriadRow.clear();
@@ -90,7 +84,7 @@ public class SendMsg extends Send{
             keyboardFirstRow.add(new KeyboardButton(Constant.BUTTON_REMOVE_DEADLINE.getConstant()));
             keyboardSecondRow.add(new KeyboardButton(Constant.BUTTON_BACK.getConstant()));
         }
-        if(!seekers.searchRequest(idUser, CommandsEnum.Back).equals(idUser + CommandsEnum.Back)) {
+        if(!validate.isExist(idUser, Commands.Back)) {
             keyboardFirstRow.add(new KeyboardButton(Constant.BUTTON_HELP.getConstant()));
             keyboardFirstRow.add(new KeyboardButton(Constant.BUTTON_DEADLINE.getConstant()));
             keyboardFirstRow.add(new KeyboardButton(Constant.BUTTON_ADD.getConstant()));

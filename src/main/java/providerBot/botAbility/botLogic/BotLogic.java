@@ -1,23 +1,24 @@
 package providerBot.botAbility.botLogic;
 
-import providerBot.botAbility.constants.CommandsEnum;
+import providerBot.botAbility.constants.Commands;
 import providerBot.botAbility.constants.Constant;
 import providerBot.botAbility.constants.ConstantError;
-import providerBot.botAbility.functions.readers.IReaders;
+import providerBot.botAbility.essences.User;
+import providerBot.botAbility.functions.readers.IReader;
+import providerBot.botAbility.functions.removing.IRemoverUserState;
+import providerBot.botAbility.functions.removing.RemoverUserState;
 import providerBot.botAbility.functions.send.SendMsg;
-import providerBot.botAbility.essences.HomeWork;
-import providerBot.botAbility.checks.validate.IValidate;
-import providerBot.botAbility.checks.validate.Validate;
-import providerBot.botAbility.essences.EndDate;
+import providerBot.botAbility.checks.validate.IValidator;
+import providerBot.botAbility.checks.validate.Validator;
 import providerBot.botAbility.essences.Discipline;
 import providerBot.botAbility.essences.Group;
-import providerBot.botAbility.functions.removing.IRemoving;
-import providerBot.botAbility.functions.removing.Removing;
-import providerBot.botAbility.functions.readers.Readers;
-import providerBot.botAbility.functions.requests.IRequests;
-import providerBot.botAbility.functions.requests.Requests;
-import providerBot.botAbility.functions.writers.IWriters;
-import providerBot.botAbility.functions.writers.Writers;
+import providerBot.botAbility.functions.removing.IFileRemover;
+import providerBot.botAbility.functions.removing.FileRemover;
+import providerBot.botAbility.functions.readers.Reader;
+import providerBot.botAbility.functions.UserState.IUserState;
+import providerBot.botAbility.functions.UserState.UserState;
+import providerBot.botAbility.functions.writers.IWriter;
+import providerBot.botAbility.functions.writers.Writer;
 import providerBot.botAbility.functions.commands.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,15 +42,16 @@ public class BotLogic implements IBotLogic {
     /**
      * Константа для проверки
      */
-    private final IValidate validate = new Validate();
+    private final IValidator validate = new Validator();
 
     /**
      * Набор работы с файлами
      */
-    private final IRemoving remove = new Removing();
-    private final IWriters write = new Writers();
-    private final IReaders read = new Readers();
-    private final IRequests request = new Requests();
+    private final IFileRemover fileRemover = new FileRemover();
+    private final IRemoverUserState deleteUserState = new RemoverUserState();
+    private final IWriter write = new Writer();
+    private final IReader read = new Reader();
+    private final IUserState request = new UserState();
 
     /**
      * Константа для логирования
@@ -79,56 +81,55 @@ public class BotLogic implements IBotLogic {
 
     @Override
     public void consoleRecordingDeadline(Message message) {
-        String idUser = message.getFrom().getId().toString();
         String words = message.getText().toLowerCase();
         StringBuilder sb = new StringBuilder();
+        User user = new User(message);
         if (commandMap.containsKey(words))
-            remove.deleteAllRequest(message);
+            deleteUserState.allUserState(message);
         try {
-            if (validate.isExist(idUser, CommandsEnum.DateDelete)) {
+            if (validate.isExist(user.id, Commands.DateDelete)) {
                 log.info(message.getFrom().getUserName() + Constant.PERFORMS_CREATE.getConstant());
-                EndDate date = read.readDate(idUser, CommandsEnum.DateDelete);
-                Group group = read.readGroup(idUser, CommandsEnum.GroupDelete);
-                sendMsg.execute(message, remove.deleteDeadline(date, group, message.getText()));
+                String date = read.readDate(user.id, Commands.DateDelete);
+                Group group = read.group(user.id, Commands.GroupDelete);
+                sendMsg.execute(message, fileRemover.deadline(date, group, message.getText()));
 
-                remove.deleteAllRequest(message);
+                deleteUserState.allUserState(message);
                 return;
             }
-            if (validate.isExist(idUser, CommandsEnum.DateDeadline)) {
+            if (validate.isExist(user.id, Commands.DateDeadline)) {
                 log.info(message.getFrom().getUserName() + Constant.PERFORMS_CREATE.getConstant());
-                EndDate date = read.readDate(idUser, CommandsEnum.DateDeadline);
-                Group group = read.readGroup(idUser, CommandsEnum.GroupDeadline);
-                sendMsg.execute(message, read.readDeadline(date, group, message.getText()));
+                String date = read.readDate(user.id, Commands.DateDeadline);
+                Group group = read.group(user.id, Commands.GroupDeadline);
+                sendMsg.execute(message, read.deadline(date, group, message.getText()));
 
-                remove.deleteAllRequest(message);
+                deleteUserState.allUserState(message);
                 return;
 
             }
-            if (validate.isExist(idUser, CommandsEnum.DisciplineAdd)) {
+            if (validate.isExist(user.id, Commands.DisciplineAdd)) {
                 log.info(message.getFrom().getUserName() + Constant.PERFORMS_CREATE.getConstant());
 
-                HomeWork homeWork = new HomeWork();
-                homeWork.homeWork = message.getText();
-                Group group = read.readGroup(idUser, CommandsEnum.GroupAdd);
-                EndDate date = read.readDate(idUser, CommandsEnum.DateAdd);
-                Discipline discipline = read.readDiscipline(idUser, CommandsEnum.DisciplineAdd);
+                String homeWork = message.getText();
+                Group group = read.group(user.id, Commands.GroupAdd);
+                String date = read.readDate(user.id, Commands.DateAdd);
+                Discipline discipline = read.discipline(user.id, Commands.DisciplineAdd);
 
                 sb.append("Дедлайн создан ")
-                        .append(write.writeDeadline(homeWork,
+                        .append(write.deadline(homeWork,
                                 group, discipline, date));
                 sendMsg.execute(message, sb.toString());
                 sb.delete(0, sb.length());
-                remove.deleteAllRequest(message);
+                deleteUserState.allUserState(message);
                 return;
             }
         } catch (IOException e) {
             log.error(ConstantError.READ_WRITE_DELETE_DEADLINE.gerError(),e);
         }
         try {
-            if (validate.isExist(idUser, CommandsEnum.DateAdd)) {
+            if (validate.isExist(user.id, Commands.DateAdd)) {
                 log.info(message.getFrom().getUserName() + Constant.PERFORMS_DISCIPLINE.getConstant());
-                write.writeDiscipline(idUser, CommandsEnum.DisciplineAdd, message.getText());
-                sb.append(Constant.WRITE_HOME_WORK).append(message.getText());
+                write.discipline(message, Commands.DisciplineAdd, message.getText());
+                sb.append(Constant.WRITE_HOME_WORK.getConstant()).append(message.getText());
                 sendMsg.execute(message, sb.toString());
                 sb.delete(0, sb.length());
                 return;
@@ -145,31 +146,31 @@ public class BotLogic implements IBotLogic {
      * @param message       Сообщение пользователся обратившийся к боту
      */
     private void analyzeDate(Message message) {
-        String idUser = message.getFrom().getId().toString();
-        if (validate.isExist(idUser, CommandsEnum.GroupAdd)) {
+        User user = new User(message);
+        if (validate.isExist(user.id, Commands.GroupAdd)) {
             log.info(message.getFrom().getUserName() + Constant.PERFORMS_DATE.getConstant());
-            analyzeDateCheck(idUser, CommandsEnum.GroupAdd, CommandsEnum.DateAdd, CommandsEnum.Add, message);
+            analyzeDateCheck(user.id, Commands.GroupAdd, Commands.DateAdd, Commands.Add, message);
             return;
         }
-        if (validate.isExist(idUser, CommandsEnum.GroupDelete)) {
+        if (validate.isExist(user.id, Commands.GroupDelete)) {
             log.info(message.getFrom().getUserName() + Constant.PERFORMS_DATE.getConstant());
-            analyzeDateCheck(idUser, CommandsEnum.GroupDelete, CommandsEnum.DateDelete, CommandsEnum.Delete, message);
+            analyzeDateCheck(user.id, Commands.GroupDelete, Commands.DateDelete, Commands.Delete, message);
             return;
         }
-        if (validate.isExist(idUser, CommandsEnum.GroupDeadline)) {
+        if (validate.isExist(user.id, Commands.GroupDeadline)) {
             log.info(message.getFrom().getUserName() + Constant.PERFORMS_DATE.getConstant());
-            analyzeDateCheck(idUser, CommandsEnum.GroupDeadline, CommandsEnum.DateDeadline, CommandsEnum.Deadline, message);
+            analyzeDateCheck(user.id, Commands.GroupDeadline, Commands.DateDeadline, Commands.Deadline, message);
             return;
         }
-        if (validate.isExist(idUser, CommandsEnum.DeleteGroupWholeDate)) {
+        if (validate.isExist(user.id, Commands.DeleteGroupWholeDate)) {
             log.info(message.getFrom().getUserName() + Constant.PERFORMS_REMOVE.getConstant());
             try {
-                Group group = read.readGroup(idUser, CommandsEnum.DeleteGroupWholeDate);
-                remove.groupDelete(message, "date", group.group);
+                Group group = read.group(user.id, Commands.DeleteGroupWholeDate);
+                fileRemover.group(message, "date", group);
             } catch (IOException e) {
                 log.error(ConstantError.REMOVE_FILE.gerError(),e);
             }
-            remove.deleteAllRequest(message);
+            deleteUserState.allUserState(message);
             return;
         }
         manipulations(message);
@@ -177,13 +178,13 @@ public class BotLogic implements IBotLogic {
 
     /**
      * Метод для проверка даты
-     * @param idUser        Уникальный идентификатор пользователя
-     * @param group         Сущность группы
-     * @param date          Сущность даты
-     * @param command       Команда
-     * @param message       Сообщение пользователя обратившийся к боту
+     * @param idUser
+     * @param group
+     * @param date
+     * @param command
+     * @param message
      */
-    private void analyzeDateCheck(String idUser, CommandsEnum group, CommandsEnum date, CommandsEnum command, Message message){
+    private void analyzeDateCheck(String idUser, Commands group, Commands date, Commands command, Message message){
         StringBuilder sb = new StringBuilder();
         String mes = message.getText();
         sb.setLength(0);
@@ -221,39 +222,41 @@ public class BotLogic implements IBotLogic {
             sb.setLength(0);
             return;
         }
-        request.requestDeadline(date, group, command, message);
-        remove.deleteRequest(idUser, command);
+        request.getDeadline(date, group, command, message);
+        deleteUserState.userState(message, command);
     }
 
     /**
      * Метод завершающий проверку состояния пользователя
-     * @param message       Собщение пользователя обратившийся к боту
+     * @param message
      */
     private void manipulations(Message message) {
-        String idUser = message.getFrom().getId().toString();
-        if (validate.isExist(idUser, CommandsEnum.Deadline)) {
+        User user = new User(message);
+        if (validate.isExist(user.id, Commands.Deadline)) {
             log.info(message.getFrom().getUserName() + Constant.PERFORMS_GROUP.getConstant());
-            request.requestGroup(CommandsEnum.GroupDeadline, message);
+            request.getGroup(Commands.GroupDeadline, message);
             return;
         }
-        if (validate.isExist(idUser, CommandsEnum.Delete)) {
+        if (validate.isExist(user.id, Commands.Delete)) {
             log.info(message.getFrom().getUserName() + Constant.PERFORMS_GROUP.getConstant());
-            request.requestGroup(CommandsEnum.GroupDelete, message);
+            request.getGroup(Commands.GroupDelete, message);
             return;
         }
-        if (validate.isExist(idUser, CommandsEnum.Add)) {
+        if (validate.isExist(user.id, Commands.Add)) {
             log.info(message.getFrom().getUserName() + Constant.PERFORMS_GROUP.getConstant());
-            request.requestGroup(CommandsEnum.GroupAdd, message);
+            request.getGroup(Commands.GroupAdd, message);
             return;
         }
-        if (validate.isExist(idUser, CommandsEnum.DeleteWholeDate)) {
+        if (validate.isExist(user.id, Commands.DeleteWholeDate)) {
             log.info(message.getFrom().getUserName() + Constant.PERFORMS_GROUP.getConstant());
-            request.requestGroup(CommandsEnum.DeleteGroupWholeDate, message);
+            request.getGroup(Commands.DeleteGroupWholeDate, message);
             return;
         }
-        if(validate.isExist(idUser, CommandsEnum.DeleteGroup)) {
+        if(validate.isExist(user.id, Commands.DeleteGroup)) {
             log.info(message.getFrom().getUserName() + Constant.PERFORMS_REMOVE_GROUP.getConstant());
-            remove.groupDelete(message, "", "");
+            Group group = null;
+            group.group = "";
+            fileRemover.group(message, "", group);
             return;
         }
         ICommand command = commandMap.get(message.getText().toLowerCase());

@@ -15,7 +15,7 @@ import java.io.*;
 /**
  * Класс для работы бота
  */
-public class TelegramProvider extends TelegramLongPollingBot{
+public class TelegramProvider extends TelegramLongPollingBot {
 
     /**
      * Константа для логирования
@@ -24,7 +24,7 @@ public class TelegramProvider extends TelegramLongPollingBot{
 
     /**
      * Метод для работы бота с чатом
-     * @param update     Обновленные переменные после обращение пользователся к боту
+     * @param update        Обновленные переменные после обращение пользователся к боту
      */
     @Override
     public void onUpdateReceived(Update update) {
@@ -35,7 +35,7 @@ public class TelegramProvider extends TelegramLongPollingBot{
 
     /**
      * Метод для отправки имени бота
-     * @return          Возращает имя
+     * @return              Возращает имя
      */
     @Override
     public String getBotUsername() {
@@ -44,38 +44,34 @@ public class TelegramProvider extends TelegramLongPollingBot{
 
     /**
      * Метод для чтения файла с токеном
-     * @return          Возращает token бота
-     * @throws IOException
+     * @return              Возращает token бота
      */
-    private String readToken() throws IOException {
-        java.io.File fi = new java.io.File(System.getProperty("user.dir") + "\\Token.txt");
-        if (fi.exists()) {
-            FileInputStream fI = new FileInputStream(fi);
-            StringBuilder resultStringBuilder = new StringBuilder();
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(fI))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    resultStringBuilder.append(line);
+    private String readToken() {
+        try {
+            File file = new File(System.getProperty("user.dir") + "\\Token.txt");
+            if (file.exists()) {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                StringBuilder result = new StringBuilder();
+                try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream))) {
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        result.append(line);
+                    }
+                    return result.toString();
                 }
-                return resultStringBuilder.toString();
-            } catch (IOException e) {
-                log.error(ConstantError.READ_TOKEN.gerError(),e);
             }
+        } catch (IOException e) {
+            log.error(ConstantError.READ_TOKEN.gerError(), e);
         }
         return "";
     }
 
     /**
      * Токен бота для связки кода с ботом в телеграмме
-     * @return        Возращает токен бота
+     * @return              Возращает токен бота
      */
     @Override
     public String getBotToken() {
-        try {
-            return readToken();
-        } catch (IOException e) {
-            log.error(ConstantError.API_ERROR.gerError(), e);
-        }
-        return "Error";
+        return readToken();
     }
 }

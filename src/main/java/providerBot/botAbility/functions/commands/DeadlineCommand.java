@@ -3,10 +3,10 @@ package providerBot.botAbility.functions.commands;
 import providerBot.botAbility.constants.Constant;
 import providerBot.botAbility.constants.ConstantError;
 import providerBot.botAbility.functions.send.SendMsg;
-import providerBot.botAbility.functions.seekers.ISeekers;
-import providerBot.botAbility.functions.writers.Writers;
-import providerBot.botAbility.constants.CommandsEnum;
-import providerBot.botAbility.functions.seekers.Seekers;
+import providerBot.botAbility.functions.seekers.ISearch;
+import providerBot.botAbility.functions.writers.Writer;
+import providerBot.botAbility.constants.Commands;
+import providerBot.botAbility.functions.seekers.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -27,21 +27,20 @@ public class DeadlineCommand extends Command{
     /**
      * Нужна для получении листа групп
      */
-    private final ISeekers getGroupList = new Seekers();
+    private final ISearch search = new Search();
     /**
      * Метод для начала диалога с пользователем по просмотру дедлайна
      * @param message
      */
     @Override
     public void execute(Message message) {
-        Writers write = new Writers();
+        Writer write = new Writer();
         log.info(message.getFrom().getUserName()+ " request Deadline");
-        String idUser = message.getFrom().getId().toString();
         try {
-            write.writeRequest(idUser, CommandsEnum.Back, "");
-            if (!getGroupList.searchGroup().equals("\nСписок акакдемических групп пуст")) {
-                write.writeRequest(idUser, CommandsEnum.Deadline, "");
-                sendMsg.execute(message, getGroupList.searchGroup());
+            write.request(message, Commands.Back, "");
+            if (!search.findGroup().equals("\nСписок акакдемических групп пуст")) {
+                write.request(message, Commands.Deadline, "");
+                sendMsg.execute(message, search.findGroup());
                 sendMsg.execute(message, Constant.WRITE_EXISTS_GROUP.getConstant());
             }
             else sendMsg.execute(message, "Дедлайнов нет");
