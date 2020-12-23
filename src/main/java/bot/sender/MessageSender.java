@@ -1,7 +1,7 @@
 package bot.sender;
 
-import bot.checks.validate.IVerification;
-import bot.checks.validate.Verification;
+import bot.checks.validate.IVerifier;
+import bot.checks.validate.Verifier;
 import bot.constants.AppCommands;
 import bot.constants.AppConstants;
 import bot.constants.AppErrorConstants;
@@ -35,7 +35,7 @@ public class MessageSender extends Send{
     /**
      * Константа для проверки
      */
-    private final IVerification validate = new Verification();
+    private final IVerifier validate = new Verifier();
     private final IReader read = new Reader();
 
     private final ISearch searcher = new Search();
@@ -82,7 +82,7 @@ public class MessageSender extends Send{
             e.printStackTrace();
         }
         if(validate.isExistUser(userId)) {
-            if (validate.isExist(userId, AppCommands.DateDeadline)
+            if (validate.isExist(userId, AppCommands.DateHomeWork)
                     || validate.isExist(userId, AppCommands.DateAdd)
                     || validate.isExist(userId, AppCommands.DateDelete)) {
                 keyboardFirstRow.clear();

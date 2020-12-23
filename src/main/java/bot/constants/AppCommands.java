@@ -14,7 +14,7 @@ public enum AppCommands {
 
     DateAdd,// Добавить дедлайн 3 шаг
     DateDelete,// Удалить дедлайн 3 шаг
-    DateDeadline,// Посмотреть дедлайн 3 шаг
+    DateHomeWork,// Посмотреть дедлайн 3 шаг
 
     DisciplineAdd,// Добавить дедлайн 4 шаг
     DisciplineDelete,// Удалить дедлайн 4 шаг

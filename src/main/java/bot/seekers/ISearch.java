@@ -4,11 +4,6 @@ package bot.seekers;
  * Интерфейс поиска
  */
 public interface ISearch {
-    /**
-     * Метод для вывода списка групп
-     * @return      список групп
-     */
-    String findGroup();
 
     /**
      * Метод для поиска учебного предмета

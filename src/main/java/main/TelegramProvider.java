@@ -30,7 +30,7 @@ public class TelegramProvider extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
         IMessageListener handle = new MessageListener();
-        handle.CheckTypeMessage(message);
+        handle.checkTypeMessage(message);
     }
 
     /**

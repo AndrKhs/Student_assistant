@@ -31,7 +31,7 @@ public class HelpCommand extends Command{
                 .append(AppConstants.HELP_SEVENTH.toStringValue())
                 .append(AppConstants.HELP_EIGHTH.toStringValue())
                 .append(AppConstants.HELP_NINTH.toStringValue());
-        sendMsg.execute(message, sb.toString());
+        messageSender.execute(message, sb.toString());
         sb.delete(0, sb.length());
         return;
     }

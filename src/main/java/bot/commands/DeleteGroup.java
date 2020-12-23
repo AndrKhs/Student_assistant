@@ -35,7 +35,7 @@ public class DeleteGroup extends Command{
             fileRemover.allUserState(message, userDate);
             File user = new File(sb.toString());
             user.delete();
-            sendMsg.execute(message, AppConstants.RE_ENTER.toStringValue());
+            messageSender.execute(message, AppConstants.RE_ENTER.toStringValue());
         } catch (IOException e) {
             log.error(AppErrorConstants.COMMAND_DELETE_DEADLINE.toStringValue(),e);
         }

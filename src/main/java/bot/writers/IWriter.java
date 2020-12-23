@@ -12,6 +12,12 @@ import java.io.IOException;
  */
 public interface IWriter {
 
+    /**
+     * Метод для сериализации данных пользователя
+     * @param message       Сообщение пользователя
+     * @param input         Ввод пользователя
+     * @throws IOException
+     */
     void writeUserDate(Message message, String input) throws IOException;
 
     /**

@@ -16,8 +16,13 @@ import java.util.List;
 import java.util.Locale;
 
 public class APIOpenWeather implements WeatherParser {
-
+    /**
+     * Константа форматирования даты в апи
+     */
     private final static DateTimeFormatter INPUT_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    /**
+     *  Константа форматирования даты для вывода пользователю
+     */
     private final static DateTimeFormatter OUTPUT_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("dd (MMMM) в HH:mm :", Locale.US);
 
     /**

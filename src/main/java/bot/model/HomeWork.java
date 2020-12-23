@@ -7,6 +7,7 @@ import java.util.Calendar;
  */
 public class HomeWork implements Serializable {
     private static final long serialVersionUID = 1L;
+    //Сущность домашнего задания
     private String homeWork;
     //Сущность учебная дисциплина
     private Discipline discipline = new Discipline();

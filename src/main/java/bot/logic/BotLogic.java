@@ -8,8 +8,8 @@ import bot.readers.IReader;
 import bot.seekers.ISearch;
 import bot.seekers.Search;
 import bot.sender.MessageSender;
-import bot.checks.validate.IVerification;
-import bot.checks.validate.Verification;
+import bot.checks.validate.IVerifier;
+import bot.checks.validate.Verifier;
 import bot.model.Discipline;
 import bot.model.Group;
 import bot.removing.IFileRemover;
@@ -34,17 +34,19 @@ import java.util.Map;
  */
 public class BotLogic implements IBotLogic {
 
-    private WeatherParser weatherParser = new APIOpenWeather();
+    private final StringBuilder sb = new StringBuilder();
+
+    private final WeatherParser weatherParser = new APIOpenWeather();
 
     /**
      * Вспомогательная сущность для отправки сообщений
      */
-    private final MessageSender sendMsg = new MessageSender();
+    private final MessageSender messageSender = new MessageSender();
 
     /**
      * Вспомогательная сущность для проверки введенных значений
      */
-    private final IVerification validator = new Verification();
+    private final IVerifier validator = new Verifier();
 
     /**
      * Набор вспомогательных сущностей для работы с файлами
@@ -91,8 +93,8 @@ public class BotLogic implements IBotLogic {
         commandMap.put(AppConstants.EMOJI_CALENDAR.toStringValue(), new HomeworkCommand());
         commandMap.put(AppConstants.EMOJI_BACK.toStringValue(), new BackCommand());
         commandMap.put(AppConstants.EMOJI_TRASH_CAN.toStringValue(), new DeleteMenuCommand());
-        commandMap.put(AppConstants.EMOJI_GAME.toStringValue(),new HeadsTails());
-        commandMap.put(AppConstants.EMOJI_WEATHER.toStringValue(),new WeatherCommand());
+        commandMap.put(AppConstants.EMOJI_GAME.toStringValue(), new HeadsTails());
+        commandMap.put(AppConstants.EMOJI_WEATHER.toStringValue(), new WeatherCommand());
     }
 
     @Override
@@ -104,50 +106,25 @@ public class BotLogic implements IBotLogic {
             if (commandMap.containsKey(words))
                 fileRemover.allUserState(message, userDate);
             if (command == null) {
-                StringBuilder sb = new StringBuilder();
-                try {
-                    if (validator.isExist(userDate.getId(), AppCommands.DateDelete)) {
-                        log.info(message.getFrom().getUserName() + AppConstants.PERFORMS_CREATE.toStringValue());
-                        String date = read.readDate(userDate.getId(), AppCommands.DateDelete);
-                        Group group = read.readGroup(userDate.getId(), AppCommands.GroupDelete);
-                        sendMsg.execute(message, fileRemover.homeWork(date, group, message.getText()));
-
-                        fileRemover.allUserState(message, userDate);
-                        return;
-                    }
-                    if (validator.isExist(userDate.getId(), AppCommands.DateDeadline)) {
-                        log.info(message.getFrom().getUserName() + AppConstants.PERFORMS_CREATE.toStringValue());
-                        String date = read.readDate(userDate.getId(), AppCommands.DateDeadline);
-                        sendMsg.execute(message, read.readDeadline(date, message.getText(), userDate));
-
-                        fileRemover.allUserState(message, userDate);
-                        return;
-
-                    }
-                    if (validator.isExist(userDate.getId(), AppCommands.DisciplineAdd)) {
-                        log.info(message.getFrom().getUserName() + AppConstants.PERFORMS_CREATE.toStringValue());
-
-                        String homeWork = message.getText();
-                        String date = read.readDate(userDate.getId(), AppCommands.DateAdd);
-                        Discipline discipline = read.readDiscipline(userDate.getId(), AppCommands.DisciplineAdd);
-
-                        sb.append("Дедлайн создан ")
-                                .append(write.writeDeadline(homeWork,
-                                        userDate, discipline, date));
-                        sendMsg.execute(message, sb.toString());
-                        sb.delete(0, sb.length());
-                        fileRemover.allUserState(message, userDate);
-                        return;
-                    }
-                } catch (IOException e) {
-                    log.error(AppErrorConstants.READ_WRITE_DELETE_DEADLINE.toStringValue(), e);
+                sb.setLength(0);
+                if (validator.isExist(userDate.getId(), AppCommands.DateDelete)) {
+                    deleteHomeWork(message, userDate);
+                    return;
+                }
+                if (validator.isExist(userDate.getId(), AppCommands.DateHomeWork)) {
+                    outputDeadline(message, userDate);
+                    return;
+                }
+                if (validator.isExist(userDate.getId(), AppCommands.DisciplineAdd)) {
+                    createDeadline(message, userDate);
+                    return;
                 }
                 try {
                     if (validator.isExist(userDate.getId(), AppCommands.DateAdd)) {
                         log.info(message.getFrom().getUserName() + AppConstants.PERFORMS_DISCIPLINE.toStringValue());
                         write.writeDiscipline(message, AppCommands.DisciplineAdd, message.getText(), userDate);
                         sb.append(AppConstants.WRITE_HOME_WORK.toStringValue()).append(message.getText());
-                        sendMsg.execute(message, sb.toString());
+                        messageSender.execute(message, sb.toString());
                         sb.delete(0, sb.length());
                         return;
                     }
@@ -162,95 +139,85 @@ public class BotLogic implements IBotLogic {
 
     /**
      * Метод для временного хранения введенной даты для создания дедлайна
-     *
-     * @param message Сообщение пользователся обратившийся к боту
+     * @param message Сообщение пользователя обратившегося к боту
      */
     private void analyzeDate(Message message, User userDate) {
         if (validator.isExist(userDate.getId(), AppCommands.Add)) {
             log.info(message.getFrom().getUserName() + AppConstants.PERFORMS_DATE.toStringValue());
-            if(checkDate(AppCommands.DateAdd, AppCommands.Add, message, userDate)) {
-                sendMsg.execute(message, search.findDiscipline(userDate.getGroup().group.toUpperCase(), message.getText()));
-                sendMsg.execute(message, AppConstants.WRITE_DISCIPLINE.toStringValue());
-                sendMsg.execute(message, AppConstants.CHOICE.toStringValue());
+            if (checkDate(AppCommands.DateAdd, AppCommands.Add, message, userDate)) {
+                messageSender.execute(message, search.findDiscipline(userDate.getGroup().group.toUpperCase(), message.getText()));
+                messageSender.execute(message, AppConstants.WRITE_DISCIPLINE.toStringValue());
+                messageSender.execute(message, AppConstants.CHOICE.toStringValue());
             }
             return;
         }
         if (validator.isExist(userDate.getId(), AppCommands.GroupDelete)) {
             log.info(message.getFrom().getUserName() + AppConstants.PERFORMS_DATE.toStringValue());
-            if(checkDate(AppCommands.DateDelete, AppCommands.Delete, message, userDate)){
-                sendMsg.execute(message, search.findDiscipline(userDate.getGroup().group.toUpperCase().toUpperCase(), message.getText()));
-                sendMsg.execute(message, AppConstants.WRITE_DISCIPLINE.toStringValue());
+            if (checkDate(AppCommands.DateDelete, AppCommands.Delete, message, userDate)) {
+                fileRemover.userState(message, AppCommands.GroupDelete, userDate);
+                messageSender.execute(message, search.findDiscipline(userDate.getGroup().group.toUpperCase().toUpperCase(), message.getText()));
+                messageSender.execute(message, AppConstants.WRITE_DISCIPLINE.toStringValue());
             }
             return;
         }
         if (validator.isExist(userDate.getId(), AppCommands.Deadline)) {
             log.info(message.getFrom().getUserName() + AppConstants.PERFORMS_DATE.toStringValue());
-            if(checkDate(AppCommands.DateDeadline, AppCommands.Deadline, message, userDate))
-            {
-                sendMsg.execute(message, search.findDiscipline(userDate.getGroup().group.toUpperCase(), message.getText()));
-                sendMsg.execute(message, AppConstants.WRITE_DISCIPLINE.toStringValue());
+            if (checkDate(AppCommands.DateHomeWork, AppCommands.Deadline, message, userDate)) {
+                messageSender.execute(message, search.findDiscipline(userDate.getGroup().group.toUpperCase(), message.getText()));
+                messageSender.execute(message, AppConstants.WRITE_DISCIPLINE.toStringValue());
             }
             return;
         }
         if (validator.isExist(userDate.getId(), AppCommands.DeleteWholeDate)) {
             log.info(message.getFrom().getUserName() + AppConstants.PERFORMS_REMOVE.toStringValue());
-            fileRemover.group(message, userDate);
             fileRemover.allUserState(message, userDate);
+            fileRemover.group(message, userDate);
             return;
         }
 
         if (validator.isExist(userDate.getId(), AppCommands.Weather)) {
             log.info(message.getFrom().getUserName() + " Запрашивает погоду");
-            sendMsg.execute(message, weatherParser.getReadyForecast(message.getText()));
+            messageSender.execute(message, weatherParser.getReadyForecast(message.getText()));
             fileRemover.allUserState(message, userDate);
             return;
         }
-        sendMsg.execute(message, AppErrorConstants.UNKNOWN_COMMAND.toStringValue());
+        messageSender.execute(message, AppErrorConstants.UNKNOWN_COMMAND.toStringValue());
     }
 
     /**
      * Метод для проверка даты
-     *
-     * @param date
-     * @param command
-     * @param message
+     * @param date      Команда даты
+     * @param command   Команда
+     * @param message   Сообщение пользователя обратившегося к боту
      */
     private boolean checkDate(AppCommands date, AppCommands command, Message message, User userDate) {
-        StringBuilder sb = new StringBuilder();
-        String mes = message.getText();
         sb.setLength(0);
-        final String[] dateLength = mes.split("\\.");
+        final String[] dateLength = message.getText().split("\\.");
         if (dateLength.length == 3) {
             final int day = Integer.parseInt(dateLength[0]);
             final int month = Integer.parseInt(dateLength[1]);
             final int year = Integer.parseInt(dateLength[2]);
             if (!validator.checkDay(day)) {
-                sb.append(AppErrorConstants.INVALID_DATE_DAY.toStringValue());
-                sendMsg.execute(message, sb.toString());
-                sb.setLength(0);
+                outputErrorDay(message);
                 return false;
             }
             if (!validator.checkMonth(month)) {
-                sb.append(AppErrorConstants.INVALID_DATE_MONTH.toStringValue());
-                sendMsg.execute(message, sb.toString());
-                sb.setLength(0);
+                outputErrorMonth(message);
                 return false;
             }
             if (!validator.checkYear(year)) {
-                sb.append(AppErrorConstants.INVALID_DATE_YEAR.toStringValue());
-                sendMsg.execute(message, sb.toString());
-                sb.setLength(0);
+                outputErrorYear(message);
                 return false;
             }
             if (!validator.checkFormatDate(dateLength)) {
                 sb.append(AppErrorConstants.INVALID_DEADLINE.toStringValue());
-                sendMsg.execute(message, sb.toString());
+                messageSender.execute(message, sb.toString());
                 sb.setLength(0);
                 return false;
             }
             if (!validator.checkLengthDate(dateLength)) {
                 sb.append(AppErrorConstants.INVALID_DATE.toStringValue());
-                sendMsg.execute(message, sb.toString());
+                messageSender.execute(message, sb.toString());
                 sb.setLength(0);
                 return false;
             }
@@ -260,11 +227,103 @@ public class BotLogic implements IBotLogic {
                 log.error(e.toString());
             }
             fileRemover.userState(message, command, userDate);
-        }
-        else{
-            sendMsg.execute(message, AppErrorConstants.DATE_ERROR.toStringValue());
+        } else {
+            messageSender.execute(message, AppErrorConstants.DATE_ERROR.toStringValue());
             return false;
         }
         return true;
+    }
+
+    /**
+     * Метод для удаления домашнего задания
+     * @param message   Сообщение пользователя обратившегося к боту
+     * @param userDate  Сущность пользователя
+     */
+    private void deleteHomeWork(Message message, User userDate) {
+        log.info(message.getFrom().getUserName() + AppConstants.PERFORMS_CREATE.toStringValue());
+        try {
+            String date = read.readDate(userDate.getId(), AppCommands.DateDelete);
+            Group group = userDate.getGroup();
+            messageSender.execute(message, fileRemover.homeWork(date, group, message.getText()));
+            fileRemover.allUserState(message, userDate);
+        } catch (IOException e) {
+            log.error("Ошибка удаления домашнего задания", e);
+        }
+        return;
+    }
+
+    /**
+     * Метод вывода домашнего задания
+     * @param message   Сообщение пользователя обратившегося к боту
+     * @param userDate  Сущность пользователя
+     */
+    private void outputDeadline(Message message, User userDate) {
+        log.info(message.getFrom().getUserName() + AppConstants.PERFORMS_CREATE.toStringValue());
+        try {
+            String date = read.readDate(userDate.getId(), AppCommands.DateHomeWork);
+            messageSender.execute(message, read.readDeadline(date, message.getText(), userDate));
+            fileRemover.allUserState(message, userDate);
+        } catch (IOException e) {
+            log.error("Ошибка вывода домашнего задания", e);
+        }
+        return;
+    }
+
+    /**
+     * Метод для создания крайнего срока сдачи домашнего задания
+     * @param message   Сообщение пользователя обратившегося к боту
+     * @param userDate  Сущность пользователя
+     */
+    private void createDeadline(Message message, User userDate) {
+        log.info(message.getFrom().getUserName() + AppConstants.PERFORMS_CREATE.toStringValue());
+        try {
+            sb.setLength(0);
+            String homeWork = message.getText();
+            String date = read.readDate(userDate.getId(), AppCommands.DateAdd);
+            Discipline discipline = read.readDiscipline(userDate.getId(), AppCommands.DisciplineAdd);
+
+            sb.append("Дедлайн создан ")
+                    .append(write.writeDeadline(homeWork,
+                            userDate, discipline, date));
+            messageSender.execute(message, sb.toString());
+            sb.delete(0, sb.length());
+            fileRemover.allUserState(message, userDate);
+        } catch (IOException e) {
+            log.error("Ошибка создания домашнего задания", e);
+        }
+        return;
+    }
+
+    /**
+     * Метод вывода ошибки дня
+     * @param message   Сообщение пользователя обратившегося к боту
+     */
+    private void outputErrorDay(Message message) {
+        sb.setLength(0);
+        sb.append(AppErrorConstants.INVALID_DATE_DAY.toStringValue());
+        messageSender.execute(message, sb.toString());
+        sb.setLength(0);
+    }
+
+    /**
+     * Метод вывода ошибки месяца
+     * @param message   Сообщение пользователя обратившегося к боту
+     */
+    private void outputErrorMonth(Message message) {
+        sb.setLength(0);
+        sb.append(AppErrorConstants.INVALID_DATE_MONTH.toStringValue());
+        messageSender.execute(message, sb.toString());
+        sb.setLength(0);
+    }
+
+    /**
+     * Метод вывод ошибки года
+     * @param message   Сообщение пользователя обратившегося к боту
+     */
+    private void outputErrorYear(Message message) {
+        sb.setLength(0);
+        sb.append(AppErrorConstants.INVALID_DATE_YEAR.toStringValue());
+        messageSender.execute(message, sb.toString());
+        sb.setLength(0);
     }
 }

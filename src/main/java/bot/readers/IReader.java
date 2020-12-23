@@ -39,5 +39,11 @@ public interface IReader {
      */
     Discipline readDiscipline(String idUser, AppCommands command) throws IOException;
 
+    /**
+     * Метод для поиска и дисериализация данных пользователя
+     * @param idUser
+     * @return          Содержание данных пользования
+     * @throws IOException
+     */
     User readUserDate(String idUser) throws IOException;
 }

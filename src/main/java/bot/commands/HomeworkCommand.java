@@ -28,8 +28,8 @@ public class HomeworkCommand extends Command{
         try {
             write.writeUserState(message, AppCommands.Back, "", userDate);
             write.writeGroup(message, AppCommands.Deadline, userDate);
-            sendMsg.execute(message, searcher.findDate(userDate.getGroup().group));
-            sendMsg.execute(message, AppConstants.WRITE_DATE.toStringValue());
+            messageSender.execute(message, searcher.findDate(userDate.getGroup().group));
+            messageSender.execute(message, AppConstants.WRITE_DATE.toStringValue());
         } catch (IOException e) {
             log.error(AppErrorConstants.COMMAND_DEADLINE.toStringValue(),e);
         }

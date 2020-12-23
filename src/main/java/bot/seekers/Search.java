@@ -29,40 +29,6 @@ public class Search implements ISearch {
     private final String date = new SimpleDateFormat("dd.MM.yyyy").format(new Date());
 
     @Override
-    public String findGroup(){
-        pathBuilder.setLength(0);
-        pathBuilder.append(System.getProperty("user.dir")).append("\\Files\\");
-        if (Files.exists(Paths.get(pathBuilder.toString()))) {
-            File filePaths = new File(pathBuilder.toString());
-            StringJoiner joiner = new StringJoiner("\n");
-            String replay = null;
-            try {
-                for (String path : filePaths.list()) {
-                    String[] group = path.split("_");
-                    if (group[1].equals(date)) {
-                        File file = new File(pathBuilder.append(path).toString());
-                        if (file.exists() && !file.isDirectory() && file.delete()) break;
-                    } else if (!group[0].equals(replay)) {
-                        replay = group[0];
-                        joiner.add(group[0]);
-                    }
-                }
-                pathBuilder.delete(0, pathBuilder.length());
-                if (joiner.toString().length() < 10) {
-                    pathBuilder.append("\n").append(AppConstants.LIST_GROUP_NULL.toStringValue());
-                    return pathBuilder.toString();
-                }
-            }catch (NullPointerException e){
-                log.error("Error read file", e);
-            }
-            pathBuilder.append("\n").append(AppConstants.LIST_GROUP.toStringValue()).append("\n").append(joiner.toString());
-            return pathBuilder.toString();
-        }
-        pathBuilder.setLength(0);
-        return pathBuilder.append(AppConstants.LIST_GROUP_NULL.toStringValue()).toString();
-    }
-
-    @Override
     public String findDiscipline(String group, String date){
         pathBuilder.setLength(0);
         pathBuilder.append(System.getProperty("user.dir")).append("\\Files\\");

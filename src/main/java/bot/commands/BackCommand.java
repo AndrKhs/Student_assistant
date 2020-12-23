@@ -21,7 +21,7 @@ public class BackCommand extends Command{
     @Override
     public void execute(Message message, User userDate) {
         log.info(message.getFrom().getUserName()+ " request back");
-        sendMsg.execute(message, AppConstants.MOVE_BACK.toStringValue());
+        messageSender.execute(message, AppConstants.MOVE_BACK.toStringValue());
         return;
     }
 }

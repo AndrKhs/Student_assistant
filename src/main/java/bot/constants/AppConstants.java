@@ -81,11 +81,11 @@ public enum AppConstants {
     /**
      * Конструкция присвоения enum констант с их значениями
      */
-    private final String constant;
-    AppConstants(String constant){
-        this.constant = constant;
+    private final String value;
+    AppConstants(String value){
+        this.value = value;
     }
     public String toStringValue(){
-        return constant;
+        return value;
     }
 }

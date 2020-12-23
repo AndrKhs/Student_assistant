@@ -14,7 +14,7 @@ public abstract class Command implements ICommand{
     /**
      * Константа для отпавки сообщения
      */
-    protected final MessageSender sendMsg = new MessageSender();
+    protected final MessageSender messageSender = new MessageSender();
     /**
      * Константа для получении листа групп
      */

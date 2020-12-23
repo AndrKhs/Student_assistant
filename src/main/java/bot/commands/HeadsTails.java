@@ -18,10 +18,10 @@ public class HeadsTails extends Command{
         int rand = random.nextInt(2);
         if (rand == 1){
             sendSticker.execute(message, "tail");
-            sendMsg.execute(message, "Орел");
+            messageSender.execute(message, "Орел");
         }else {
             sendSticker.execute(message, "head");
-            sendMsg.execute(message, "Решка");
+            messageSender.execute(message, "Решка");
         }
     }
 }

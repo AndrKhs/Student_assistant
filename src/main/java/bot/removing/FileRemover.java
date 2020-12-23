@@ -24,7 +24,7 @@ public class FileRemover implements IFileRemover {
     /**
      * Константа для отправки сообщения
      */
-    private final MessageSender sendMsg = new MessageSender();
+    private final MessageSender messageSender = new MessageSender();
 
     /**
      * Константа для StringBuilder
@@ -41,10 +41,10 @@ public class FileRemover implements IFileRemover {
             for (String path : file.list()) {
                 File fileHomeWork = new File(sb.append(path).toString());
                 if (fileHomeWork.delete()) {
-                    sendMsg.execute(message, AppConstants.REMOVE.toStringValue());
+                    messageSender.execute(message, AppConstants.REMOVE.toStringValue());
                     allUserState(message, userDate);
                     return;
-                } else sendMsg.execute(message, AppErrorConstants.INVALID_GROUP_INPUT.toStringValue());
+                } else messageSender.execute(message, AppErrorConstants.INVALID_GROUP_INPUT.toStringValue());
 
             }
         } catch (NullPointerException e) {

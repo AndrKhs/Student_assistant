@@ -29,7 +29,7 @@ public class DeleteMenuCommand extends Command {
         try {
             write.writeUserState(message, AppCommands.Back, "", userDate);
             write.writeUserState(message, AppCommands.CommandDelete, "", userDate);
-            sendMsg.execute(message, AppConstants.CHOICE_REMOVE.toStringValue());
+            messageSender.execute(message, AppConstants.CHOICE_REMOVE.toStringValue());
         } catch (IOException e) {
             log.error(AppErrorConstants.COMMAND_DELETE.toStringValue(), e);
         }

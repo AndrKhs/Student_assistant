@@ -10,5 +10,5 @@ public interface IMessageListener {
      * Метод для определения типа сообщения
      * @param message       Сообщение пользователя обратившийся к боту
      */
-    void CheckTypeMessage(Message message);
+    void checkTypeMessage(Message message);
 }

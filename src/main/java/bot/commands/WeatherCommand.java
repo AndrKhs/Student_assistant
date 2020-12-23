@@ -26,7 +26,7 @@ public class WeatherCommand extends Command {
         try {
             write.writeUserState(message, AppCommands.Back, "", userDate);
             write.writeUserState(message, AppCommands.Weather, "", userDate);
-            sendMsg.execute(message, AppConstants.ENTER_CITY.toStringValue());
+            messageSender.execute(message, AppConstants.ENTER_CITY.toStringValue());
         } catch (IOException e) {
             log.error(AppErrorConstants.COMMAND_ADD.toStringValue(), e);
         }
