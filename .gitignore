@@ -5,3 +5,7 @@
 /target/*
 /.gradle/*
 /src/.idea/*
+/Token.txt
+/logs/
+/Music/music
+/user
